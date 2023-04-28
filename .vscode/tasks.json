@@ -1,0 +1,34 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "MailHog",
+      "type": "shell",
+      "command": "mailhog",
+      "group": "none",
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "Python Dev Tools",
+      "type": "shell",
+      "command": "source ../venv/bin/activate && uvicorn config.asgi:application --host 0.0.0.0 --reload --reload-include '*.html'",
+      "group": "none",
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "DevEnv",
+      "dependsOn": ["Python Dev Tools", "MailHog"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      }
+    }
+  ]
+}

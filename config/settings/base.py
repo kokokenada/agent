@@ -68,6 +68,7 @@ DJANGO_APPS = [
     # "django.contrib.humanize", # Handy template tags
     "django.contrib.admin",
     "django.forms",
+    "graphene_django",
 ]
 THIRD_PARTY_APPS = [
     "crispy_forms",
@@ -274,3 +275,18 @@ SOCIALACCOUNT_FORMS = {"signup": "agent.users.forms.UserSocialSignupForm"}
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+GRAPHENE = {"SCHEMA": "agent.schema.schema"}
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "agent",
+        "USER": "postgres",
+        "PASSWORD": "postgrespassword",
+        "HOST": "localhost",
+        "PORT": "5454",
+        "OPTIONS": {
+            # other PostgreSQL options here, if needed
+        },
+    },
+}
