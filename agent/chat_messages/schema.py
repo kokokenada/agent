@@ -2,6 +2,7 @@ import graphene
 from graphene_django import DjangoObjectType
 
 from .models import Chat
+from .utils import create_chat
 
 
 class ChatType(DjangoObjectType):
@@ -9,10 +10,9 @@ class ChatType(DjangoObjectType):
     class Meta:
         model = Chat
         field = ("id", "name")
-        # app_label = 'chat_messages'
 
 
-class ChatCreate(graphene.Mutation):
+class ChatCreateMutation(graphene.Mutation):
     class Arguments:
         # Add fields you would like to create. This will corelate with the ContactType fields above.
         name = graphene.String()
@@ -21,6 +21,13 @@ class ChatCreate(graphene.Mutation):
 
     @classmethod
     def mutate(cls, root, info, name):
-        # function that will save the data
-        chat = Chat(name=name)  # accepts all fields
-        chat.save()  # d=save the contact
+        user = info.context.user
+        if user.is_anonymous:
+            raise Exception("Authentication required")
+
+        chat = create_chat(name, user)
+        return ChatCreateMutation(chat=chat)
+
+
+class Mutation(graphene.ObjectType):
+    chat_create = ChatCreateMutation.Field()
