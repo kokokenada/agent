@@ -13,7 +13,7 @@
     {
       "label": "Python Dev Tools Sync",
       "type": "shell",
-      "command": "source ../venv/bin/activate && python manage.py runserver 0.0.0.0:8000",
+      "command": "source ../venv/bin/activate && cd packages/server && python manage.py runserver 0.0.0.0:8000",
       "group": "none",
       "presentation": {
         "reveal": "always"
@@ -22,7 +22,7 @@
     {
       "label": "Python Dev Tools Async",
       "type": "shell",
-      "command": "source ../venv/bin/activate && uvicorn config.asgi:application --host 0.0.0.0 --reload --reload-include '*.html'",
+      "command": "source ../venv/bin/activate && cd packages/server && uvicorn config.asgi:application --host 0.0.0.0 --reload --reload-include '*.html'",
       "group": "none",
       "presentation": {
         "reveal": "always"

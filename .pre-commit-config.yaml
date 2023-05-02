@@ -50,6 +50,9 @@ repos:
     rev: 6.0.0
     hooks:
       - id: flake8
+        args:
+          - '--config'
+          - 'packages/server/setup.cfg'
 
 # sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
 ci:
