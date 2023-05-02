@@ -12,9 +12,6 @@ class Chat(models.Model):
     def __str__(self):
         return self.name
 
-    # class Meta:
-    #     app_label = 'chat_messages'
-
 
 class ChatParticipant(models.Model):
     id = models.AutoField(primary_key=True)
@@ -24,9 +21,6 @@ class ChatParticipant(models.Model):
 
     def __str__(self):
         return f"{self.user.name} in {self.chat.name}"
-
-    # class Meta:
-    #     app_label = 'chat_messages'
 
 
 class ChatMessage(models.Model):
@@ -38,6 +32,3 @@ class ChatMessage(models.Model):
 
     def __str__(self):
         return f"{self.user.name}: {self.content}"
-
-    # class Meta:
-    #     app_label = 'chat_messages'

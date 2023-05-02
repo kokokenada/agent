@@ -26,3 +26,25 @@ def create_chat(name, user):
     add_participant_to_chat(chat, user)
     add_ai_bot_to_chat(chat)
     return chat
+
+
+# def get_my_chats(user):
+#     print(user)
+#     if user.is_anonymous:
+#         raise Exception("Authentication required")
+#     chats = user.chats_participated.all()
+#     print(chats)
+#     print("here2")
+
+#     chats2 = Chat.objects.all()
+#     print(chats2)
+#     print("here3")
+#     return chats
+
+
+def get_my_chats(user):
+    if user.is_anonymous:
+        raise Exception("Authentication required")
+
+    chats = Chat.objects.filter(participants__user=user)
+    return chats

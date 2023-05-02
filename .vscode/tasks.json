@@ -11,9 +11,27 @@
       }
     },
     {
-      "label": "Python Dev Tools",
+      "label": "Python Dev Tools Sync",
+      "type": "shell",
+      "command": "source ../venv/bin/activate && python manage.py runserver 0.0.0.0:8000",
+      "group": "none",
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "Python Dev Tools Async",
       "type": "shell",
       "command": "source ../venv/bin/activate && uvicorn config.asgi:application --host 0.0.0.0 --reload --reload-include '*.html'",
+      "group": "none",
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "Kill Server",
+      "type": "shell",
+      "command": "lsof -t -i tcp:8000 | xargs kill",
       "group": "none",
       "presentation": {
         "reveal": "always"
