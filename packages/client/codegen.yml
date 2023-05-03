@@ -1,0 +1,11 @@
+overwrite: true
+schema: '../server/agent/schema.json'
+documents: './src/api/**/*.ts'
+config:
+  namingConvention: keep
+  declarationKind: 'interface'
+generates:
+  ./src/api/types.ts:
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'

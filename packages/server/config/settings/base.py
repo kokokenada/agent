@@ -276,7 +276,11 @@ SOCIALACCOUNT_FORMS = {"signup": "agent.users.forms.UserSocialSignupForm"}
 
 # Your stuff...
 # ------------------------------------------------------------------------------
-GRAPHENE = {"SCHEMA": "agent.schema.schema"}
+GRAPHENE = {
+    "SCHEMA": "agent.schema.schema",
+    "SCHEMA_OUTPUT": "schema.json",  # defaults to schema.json,
+    "SCHEMA_INDENT": 2,  # Defaults to None (displays all data on a single line)
+}
 
 DATABASES = {
     "default": {

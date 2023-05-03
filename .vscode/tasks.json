@@ -38,8 +38,17 @@
       }
     },
     {
+      "label": "Client",
+      "type": "shell",
+      "command": "cd packages/client && npm run start",
+      "group": "none",
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
       "label": "DevEnv",
-      "dependsOn": ["Python Dev Tools", "MailHog"],
+      "dependsOn": ["Python Dev Tools Async", "MailHog", "Client"],
       "group": {
         "kind": "build",
         "isDefault": true

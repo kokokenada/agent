@@ -2,16 +2,17 @@ import graphene
 from django.contrib.auth import get_user_model
 from graphene_django import DjangoObjectType
 
-from .models import Chat, ChatMessage
+from .models import Chat as DbChat
+from .models import ChatMessage
 from .utils import create_chat, get_my_chats
 
 User = get_user_model()
 
 
-class ChatType(DjangoObjectType):
+class Chat(DjangoObjectType):
     # Describe the data that is to be formatted into GraphQL fields
     class Meta:
-        model = Chat
+        model = DbChat
         field = ("id", "name")
 
 
@@ -20,7 +21,7 @@ class CreateChatMutation(graphene.Mutation):
         # Add fields you would like to create. This will corelate with the ContactType fields above.
         name = graphene.String()
 
-    chat = graphene.Field(ChatType)  # define the class we are getting the fields from
+    chat = graphene.Field(Chat)  # define the class we are getting the fields from
 
     @classmethod
     def mutate(cls, root, info, name):
@@ -38,7 +39,7 @@ class ChatMessageType(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    my_chats = graphene.List(ChatType)
+    my_chats = graphene.List(Chat)
 
     def resolve_my_chats(self, info):
         user = info.context.user
