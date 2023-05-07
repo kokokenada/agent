@@ -26,11 +26,11 @@ export const apiContext = (
 };
 
 const DEBUG = false;
-const REACT_APP_SERVER_API_URL = getEnvVar('REACT_APP_SERVER_API_URL');
+const VITE_SERVER_API_URL = getEnvVar('VITE_API_URL');
 
 ClientLogger.log(
   'Loading API',
-  `apollo endpoint for api = ${getEnvVar(REACT_APP_SERVER_API_URL)}`,
+  `apollo endpoint for api = ${VITE_SERVER_API_URL}`,
 );
 
 interface CurrentClient {
@@ -93,7 +93,7 @@ export const getApolloClient = () => {
   let apiLinks = ApolloLink.from([
     errorLink,
     createHttpLink({
-      uri: REACT_APP_SERVER_API_URL,
+      uri: VITE_SERVER_API_URL,
       credentials: 'include',
     }),
   ]);

@@ -14,11 +14,19 @@ import {
   Message,
   MessageInput,
 } from '@chatscope/chat-ui-kit-react';
+import { useChatApi } from '@src/api/use-chat-api';
+import { ClientLogger } from '@src/client-logger';
 
 console.log('styles', styles);
 
 export const Home = () => {
   const navigate = useNavigate();
+  const chatApi = useChatApi();
+
+  useEffect(() => {
+    const chats = chatApi.chats();
+    DEBUG && ClientLogger.debug('chats', '', chats);
+  }, []);
 
   return (
     <>

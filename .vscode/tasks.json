@@ -13,7 +13,7 @@
     {
       "label": "Python Dev Tools Sync",
       "type": "shell",
-      "command": "source ../venv/bin/activate && cd packages/server && python manage.py runserver 0.0.0.0:8000",
+      "command": "source ./activate_and_set_env.sh && cd packages/server && python manage.py runserver 0.0.0.0:8000",
       "group": "none",
       "presentation": {
         "reveal": "always"
@@ -22,7 +22,7 @@
     {
       "label": "Python Dev Tools Async",
       "type": "shell",
-      "command": "source ../venv/bin/activate && cd packages/server && uvicorn config.asgi:application --host 0.0.0.0 --reload --reload-include '*.html'",
+      "command": "source ./activate_and_set_env.sh && cd packages/server && uvicorn config.asgi:application --host 0.0.0.0 --reload --reload-include '*.html'",
       "group": "none",
       "presentation": {
         "reveal": "always"
@@ -40,7 +40,7 @@
     {
       "label": "Client",
       "type": "shell",
-      "command": "cd packages/client && npm run start",
+      "command": "source ./activate_and_set_env.sh && cd packages/client && npm run start",
       "group": "none",
       "presentation": {
         "reveal": "always"
