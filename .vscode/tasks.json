@@ -11,6 +11,15 @@
       }
     },
     {
+      "label": "Generate Schema",
+      "type": "shell",
+      "command": "source ./activate_and_set_env.sh && cd packages/server/agent && python ../manage.py graphql_schema && cd ../../client && npm run gen",
+      "group": "none",
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
       "label": "Python Dev Tools Sync",
       "type": "shell",
       "command": "source ./activate_and_set_env.sh && cd packages/server && python manage.py runserver 0.0.0.0:8000",
@@ -32,6 +41,15 @@
       "label": "Kill Server",
       "type": "shell",
       "command": "lsof -t -i tcp:8000 | xargs kill",
+      "group": "none",
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "Kill Client",
+      "type": "shell",
+      "command": "lsof -t -i tcp:8001 | xargs kill",
       "group": "none",
       "presentation": {
         "reveal": "always"

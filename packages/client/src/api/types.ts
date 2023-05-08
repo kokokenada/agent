@@ -17,6 +17,7 @@ export interface Scalars {
   Int: number;
   Float: number;
   DateTime: any;
+  GenericScalar: any;
 }
 
 export interface Chat {
@@ -49,6 +50,10 @@ export interface Mutation {
   __typename?: 'Mutation';
   createChat?: Maybe<CreateChatMutation>;
   createChatMessage?: Maybe<CreateChatMessageMutation>;
+  refreshToken?: Maybe<Refresh>;
+  /** Obtain JSON Web Token mutation */
+  tokenAuth?: Maybe<ObtainJSONWebToken>;
+  verifyToken?: Maybe<Verify>;
 }
 
 export interface MutationcreateChatArgs {
@@ -60,9 +65,42 @@ export interface MutationcreateChatMessageArgs {
   content: Scalars['String'];
 }
 
+export interface MutationrefreshTokenArgs {
+  token?: InputMaybe<Scalars['String']>;
+}
+
+export interface MutationtokenAuthArgs {
+  email: Scalars['String'];
+  password: Scalars['String'];
+}
+
+export interface MutationverifyTokenArgs {
+  token?: InputMaybe<Scalars['String']>;
+}
+
+/** Obtain JSON Web Token mutation */
+export interface ObtainJSONWebToken {
+  __typename?: 'ObtainJSONWebToken';
+  payload: Scalars['GenericScalar'];
+  refreshExpiresIn: Scalars['Int'];
+  token: Scalars['String'];
+}
+
 export interface Query {
   __typename?: 'Query';
   myChats?: Maybe<Array<Maybe<Chat>>>;
+}
+
+export interface Refresh {
+  __typename?: 'Refresh';
+  payload: Scalars['GenericScalar'];
+  refreshExpiresIn: Scalars['Int'];
+  token: Scalars['String'];
+}
+
+export interface Verify {
+  __typename?: 'Verify';
+  payload: Scalars['GenericScalar'];
 }
 
 export type ChatFragmentFragment = {
