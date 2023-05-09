@@ -24,8 +24,21 @@
       "type": "shell",
       "command": "source ./activate_and_set_env.sh && cd packages/server && python manage.py runserver 0.0.0.0:8000",
       "group": "none",
+      "isBackground": true,
       "presentation": {
         "reveal": "always"
+      },
+      "problemMatcher": {
+        "owner": "python",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.*)\\:([0-9]+)\\:([0-9]+):\\s+(error|warning):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
       }
     },
     {
@@ -33,8 +46,21 @@
       "type": "shell",
       "command": "source ./activate_and_set_env.sh && cd packages/server && uvicorn config.asgi:application --host 0.0.0.0 --reload --reload-include '*.html'",
       "group": "none",
+      "isBackground": true,
       "presentation": {
         "reveal": "always"
+      },
+      "problemMatcher": {
+        "owner": "python",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.*)\\:([0-9]+)\\:([0-9]+):\\s+(error|warning):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
       }
     },
     {
@@ -62,6 +88,20 @@
       "group": "none",
       "presentation": {
         "reveal": "always"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "typescript",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.*)\\(([0-9]+),([0-9]+)\\):\\s+(error|warning)\\s+(TS[0-9]+):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "code": 5,
+          "message": 6
+        }
       }
     },
     {

@@ -5,8 +5,8 @@ import Paper from '@mui/material/Paper';
 
 const DEBUG = false;
 
+// @ts-ignore
 import styles from '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
-
 import {
   MainContainer,
   ChatContainer,
@@ -17,7 +17,7 @@ import {
 import { useChatApi } from '@src/api/use-chat-api';
 import { ClientLogger } from '@src/client-logger';
 
-console.log('styles', styles);
+if (styles) console.log('styles loaded'); // Trick vite into loading the CSS
 
 export const Home = () => {
   const navigate = useNavigate();

@@ -103,6 +103,13 @@ export interface Verify {
   payload: Scalars['GenericScalar'];
 }
 
+export type tokenAuthMutationVariables = Exact<{ [key: string]: never }>;
+
+export type tokenAuthMutation = {
+  __typename?: 'Mutation';
+  tokenAuth?: { __typename?: 'ObtainJSONWebToken'; token: string } | null;
+};
+
 export type ChatFragmentFragment = {
   __typename?: 'Chat';
   id: string;
