@@ -6,7 +6,7 @@ whitenoise==6.4.0  # https://github.com/evansd/whitenoise
 redis==4.5.4  # https://github.com/redis/redis-py
 hiredis==2.2.2  # https://github.com/redis/hiredis-py
 uvicorn[standard]==0.22.0  # https://github.com/encode/uvicorn
-asgiref==3.5.0
+asgiref==3.6.0
 
 
 # Django

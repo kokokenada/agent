@@ -2,30 +2,9 @@ import graphene
 import graphql_jwt
 from django.contrib.auth import authenticate, get_user_model, login
 from django.db import models
-from graphene_django import DjangoObjectType
+from django.http import HttpResponse
 
-
-class LoginResponse(graphene.ObjectType):
-    token = graphene.String()
-
-
-# class LoginMutation(graphene.Mutation):
-#     class Arguments:
-#         user_name = graphene.String()
-#         password = graphene.String()
-
-#     Output = LoginResponse
-
-#     @classmethod
-#     def mutate(cls, root, info, user_name, password):
-#         # You should implement the authentication logic here,
-#         # and generate the token for the user if the credentials are valid.
-#         # For now, I'm just returning a hardcoded token.
-#         token = "your_generated_token"
-#         return LoginResponse(token=token)
-
-# class Mutation(graphene.ObjectType):
-#     login = LoginMutation.Field()
+from config.settings.base import JWT_AUTH
 
 
 class Mutation(graphene.ObjectType):

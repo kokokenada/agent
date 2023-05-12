@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Django",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/packages/server/manage.py",
+      "args": ["runserver"],
+      "django": true,
+      "cwd": "${workspaceFolder}/packages/server",
+      "env": {
+        "VIRTUAL_ENV": "${workspaceFolder}/../venv",
+        "PYTHONPATH": "${workspaceFolder}/../venv/lib/python3.11/site-packages"
+      },
+      "envFile": "${workspaceFolder}/activate_and_set_env.sh"
+    }
+  ]
+}

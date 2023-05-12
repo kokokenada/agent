@@ -1,6 +1,7 @@
 """
 Base settings to build other settings files upon.
 """
+from datetime import timedelta
 from pathlib import Path
 
 import environ
@@ -68,8 +69,8 @@ DJANGO_APPS = [
     # "django.contrib.humanize", # Handy template tags
     "django.contrib.admin",
     "django.forms",
-    "graphene_django",
     "corsheaders",
+    "graphene_django",
 ]
 THIRD_PARTY_APPS = [
     "crispy_forms",
@@ -313,3 +314,19 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = ["https://*.mydomain.com", "http://localhost:8001"]
+
+JWT_AUTH = {
+    "JWT_ALLOW_REFRESH": True,
+    "JWT_EXPIRATION_DELTA": timedelta(minutes=15),
+    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
+    "JWT_COOKIE_SECURE": True,
+    "JWT_COOKIE_HTTPONLY": True,
+    "JWT_COOKIE_SAMESITE": "Lax",
+    "JWT_COOKIE_NAME": "access_token",
+}
+
+GRAPHQL_JWT = {
+    "JWT_VERIFY_EXPIRATION": True,
+    "JWT_EXPIRATION_DELTA": timedelta(minutes=0.25),
+    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
+}

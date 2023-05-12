@@ -6,6 +6,7 @@
       "type": "shell",
       "command": "mailhog",
       "group": "none",
+      "isBackground": true,
       "presentation": {
         "reveal": "always"
       }
@@ -113,6 +114,28 @@
       },
       "presentation": {
         "reveal": "always"
+      }
+    },
+    {
+      "label": "Activate and Set Env",
+      "type": "shell",
+      "command": "source ./activate_and_set_env.sh",
+      "group": "none",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": {
+        "owner": "python",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.*)\\:([0-9]+)\\:([0-9]+):\\s+(error|warning):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
       }
     }
   ]
