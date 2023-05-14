@@ -46,10 +46,16 @@ export interface CreateChatMutation {
   chat?: Maybe<Chat>;
 }
 
+export interface LogoutMutation {
+  __typename?: 'LogoutMutation';
+  success?: Maybe<Scalars['Boolean']>;
+}
+
 export interface Mutation {
   __typename?: 'Mutation';
   createChat?: Maybe<CreateChatMutation>;
   createChatMessage?: Maybe<CreateChatMessageMutation>;
+  logout?: Maybe<LogoutMutation>;
   refreshToken?: Maybe<Refresh>;
   /** Obtain JSON Web Token mutation */
   tokenAuth?: Maybe<ObtainJSONWebToken>;
@@ -103,11 +109,21 @@ export interface Verify {
   payload: Scalars['GenericScalar'];
 }
 
-export type tokenAuthMutationVariables = Exact<{ [key: string]: never }>;
+export type tokenAuthMutationVariables = Exact<{
+  email: Scalars['String'];
+  password: Scalars['String'];
+}>;
 
 export type tokenAuthMutation = {
   __typename?: 'Mutation';
   tokenAuth?: { __typename?: 'ObtainJSONWebToken'; token: string } | null;
+};
+
+export type logoutMutationVariables = Exact<{ [key: string]: never }>;
+
+export type logoutMutation = {
+  __typename?: 'Mutation';
+  logout?: { __typename?: 'LogoutMutation'; success?: boolean | null } | null;
 };
 
 export type ChatFragmentFragment = {
@@ -116,9 +132,9 @@ export type ChatFragmentFragment = {
   name: string;
 };
 
-export type chatsQueryVariables = Exact<{ [key: string]: never }>;
+export type myChatsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type chatsQuery = {
+export type myChatsQuery = {
   __typename?: 'Query';
   myChats?: Array<{
     __typename?: 'Chat';

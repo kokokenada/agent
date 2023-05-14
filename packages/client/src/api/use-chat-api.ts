@@ -22,14 +22,14 @@ export function useChatApi() {
 
   const chatsQuery = gql`
     ${CHAT_FIELDS}
-    query chats {
+    query myChats {
       myChats {
         ...ChatFragment
       }
     }
   `;
   return {
-    async chats() {
+    async myChats() {
       DEBUG && ClientLogger.debug('useChatApi.chats', `started`);
       const resp = await api.query<any, any>({
         query: chatsQuery,

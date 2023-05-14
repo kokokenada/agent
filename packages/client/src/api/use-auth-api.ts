@@ -31,6 +31,22 @@ export function useAuthApi() {
       DEBUG && ClientLogger.debug('useAuthApi.tokenAuth', 'Response', resp);
       return resp;
     },
+
+    async logout() {
+      DEBUG && ClientLogger.debug('useAuthApi.logout', `started`);
+      const resp = await api.mutate<any, any>({
+        mutation: gql`
+          mutation logout {
+            logout {
+              success
+            }
+          }
+        `,
+        fetchPolicy: 'network-only',
+      });
+      DEBUG && ClientLogger.debug('useAuthApi.logout', 'Response', resp);
+      return resp;
+    },
   };
 }
 `

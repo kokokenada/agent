@@ -2,9 +2,17 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthApi } from '../api/use-auth-api';
-import { TextField, Button, Typography, Container, Box } from '@mui/material';
+import {
+  TextField,
+  Button,
+  Typography,
+  Container,
+  Box,
+  useTheme,
+} from '@mui/material';
 import { styled } from '@mui/system';
 import { ROUTES } from '@src/Routes';
+import { ClientLogger } from '@src/client-logger';
 
 const StyledContainer = styled(Container)`
   margin-top: ${({ theme }) => theme.spacing(8)};
@@ -31,12 +39,15 @@ type FormValues = {
   password: string;
 };
 
+const DEBUG = true;
+
 export const Login: React.FC = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>();
+  const theme = useTheme();
   const { tokenAuth } = useAuthApi();
   const navigate = useNavigate();
   const [loginError, setLoginError] = React.useState('');
@@ -44,6 +55,11 @@ export const Login: React.FC = () => {
   const onSubmit = async (data: FormValues) => {
     try {
       const response = await tokenAuth(data.email, data.password);
+      DEBUG && ClientLogger.debug('Login', 'response', response);
+      if (response.errors) {
+        setLoginError(response.errors[0].message);
+        return;
+      }
       const token = response.data.tokenAuth.token;
       localStorage.setItem('authToken', token);
       navigate('/');
@@ -52,13 +68,15 @@ export const Login: React.FC = () => {
     }
   };
 
+  DEBUG && ClientLogger.debug('Login', 'render', { loginError });
+
   return (
-    <StyledContainer component="main" maxWidth="xs">
+    <StyledContainer maxWidth="xs">
       <Box>
         <Typography component="h1" variant="h5">
           Login
         </Typography>
-        {loginError && <ErrorText>{loginError}</ErrorText>}
+        {loginError && <ErrorText theme={theme}>{loginError}</ErrorText>}
         <StyledForm onSubmit={handleSubmit(onSubmit)} noValidate>
           <TextField
             variant="outlined"
