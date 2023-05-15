@@ -1,6 +1,7 @@
 """
 Base settings to build other settings files upon.
 """
+from datetime import timedelta
 from pathlib import Path
 
 import environ
@@ -68,6 +69,7 @@ DJANGO_APPS = [
     # "django.contrib.humanize", # Handy template tags
     "django.contrib.admin",
     "django.forms",
+    "corsheaders",
     "graphene_django",
 ]
 THIRD_PARTY_APPS = [
@@ -95,8 +97,9 @@ MIGRATION_MODULES = {"sites": "agent.contrib.sites.migrations"}
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#authentication-backends
 AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
+    "graphql_jwt.backends.JSONWebTokenBackend",
+    "django.contrib.auth.backends.ModelBackend",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 AUTH_USER_MODEL = "users.User"
@@ -127,15 +130,19 @@ AUTH_PASSWORD_VALIDATORS = [
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware", # TO DO: add this back in, probably by setting a cookie.
+    # noqa This article does it on the client, but it's probably better on the server https://stackoverflow.com/questions/60533674/does-a-graphene-django-endpoint-expects-a-x-csrftoken-and-csrfcookie-at-the-same
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
 ]
 
 # STATIC
@@ -280,6 +287,9 @@ GRAPHENE = {
     "SCHEMA": "agent.schema.schema",
     "SCHEMA_OUTPUT": "schema.json",  # defaults to schema.json,
     "SCHEMA_INDENT": 2,  # Defaults to None (displays all data on a single line)
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+    ],
 }
 
 DATABASES = {
@@ -294,4 +304,30 @@ DATABASES = {
             # other PostgreSQL options here, if needed
         },
     },
+}
+
+CORS_ALLOWED_ORIGINS = [
+    "https://example.com",
+    "http://localhost:8001",
+]
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = ["https://*.mydomain.com", "http://localhost:8001"]
+
+JWT_AUTH = {
+    "JWT_ALLOW_REFRESH": True,
+    "JWT_EXPIRATION_DELTA": timedelta(minutes=15),
+    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
+    "JWT_COOKIE_SECURE": True,
+    "JWT_COOKIE_HTTPONLY": True,
+    "JWT_COOKIE_SAMESITE": "Lax",
+    "JWT_COOKIE_NAME": "access_token",
+}
+
+GRAPHQL_JWT = {
+    "JWT_VERIFY_EXPIRATION": True,
+    "JWT_EXPIRATION_DELTA": timedelta(minutes=5),
+    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
 }

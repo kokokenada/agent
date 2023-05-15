@@ -7,6 +7,8 @@ import {
   useLocation,
 } from 'react-router-dom';
 import { Home } from './pages/Home';
+import { Login } from './pages/Login';
+import { SignUp } from './pages/SignUp';
 
 const ScrollToTop = () => {
   const location = useLocation();
@@ -32,6 +34,12 @@ const parseQueryString = (key: string): string | undefined => {
 
 const DEBUG = true;
 
+export const ROUTES = {
+  HOME: '/',
+  LOGIN: '/login',
+  SIGNUP: '/signup',
+};
+
 export const Routes = () => {
   // const api = getApi();
 
@@ -41,7 +49,9 @@ export const Routes = () => {
     <BrowserRouter>
       <ScrollToTop />
       <Switch>
-        <Route path="/" element={<Home />} />
+        <Route path={ROUTES.HOME} element={<Home />} />
+        <Route path={ROUTES.LOGIN} element={<Login />} />
+        <Route path={ROUTES.SIGNUP} element={<SignUp />} />
         {/* <Route path="/404" element={<NotFound />} /> */}
         <Route path="*" element={<Navigate to="/404" replace />} />
       </Switch>

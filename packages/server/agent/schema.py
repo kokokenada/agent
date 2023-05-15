@@ -1,5 +1,6 @@
 import chat_messages.schema
 import graphene
+import users.schema
 
 
 class Query(chat_messages.schema.Query, graphene.ObjectType):
@@ -7,7 +8,7 @@ class Query(chat_messages.schema.Query, graphene.ObjectType):
     pass
 
 
-class Mutation(chat_messages.schema.Mutation, graphene.ObjectType):
+class Mutation(chat_messages.schema.Mutation, users.schema.Mutation, graphene.ObjectType):
     pass
 
 

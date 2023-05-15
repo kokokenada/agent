@@ -17,6 +17,7 @@ export interface Scalars {
   Int: number;
   Float: number;
   DateTime: any;
+  GenericScalar: any;
 }
 
 export interface Chat {
@@ -45,10 +46,20 @@ export interface CreateChatMutation {
   chat?: Maybe<Chat>;
 }
 
+export interface LogoutMutation {
+  __typename?: 'LogoutMutation';
+  success?: Maybe<Scalars['Boolean']>;
+}
+
 export interface Mutation {
   __typename?: 'Mutation';
   createChat?: Maybe<CreateChatMutation>;
   createChatMessage?: Maybe<CreateChatMessageMutation>;
+  logout?: Maybe<LogoutMutation>;
+  refreshToken?: Maybe<Refresh>;
+  /** Obtain JSON Web Token mutation */
+  tokenAuth?: Maybe<ObtainJSONWebToken>;
+  verifyToken?: Maybe<Verify>;
 }
 
 export interface MutationcreateChatArgs {
@@ -60,10 +71,60 @@ export interface MutationcreateChatMessageArgs {
   content: Scalars['String'];
 }
 
+export interface MutationrefreshTokenArgs {
+  token?: InputMaybe<Scalars['String']>;
+}
+
+export interface MutationtokenAuthArgs {
+  email: Scalars['String'];
+  password: Scalars['String'];
+}
+
+export interface MutationverifyTokenArgs {
+  token?: InputMaybe<Scalars['String']>;
+}
+
+/** Obtain JSON Web Token mutation */
+export interface ObtainJSONWebToken {
+  __typename?: 'ObtainJSONWebToken';
+  payload: Scalars['GenericScalar'];
+  refreshExpiresIn: Scalars['Int'];
+  token: Scalars['String'];
+}
+
 export interface Query {
   __typename?: 'Query';
   myChats?: Maybe<Array<Maybe<Chat>>>;
 }
+
+export interface Refresh {
+  __typename?: 'Refresh';
+  payload: Scalars['GenericScalar'];
+  refreshExpiresIn: Scalars['Int'];
+  token: Scalars['String'];
+}
+
+export interface Verify {
+  __typename?: 'Verify';
+  payload: Scalars['GenericScalar'];
+}
+
+export type tokenAuthMutationVariables = Exact<{
+  email: Scalars['String'];
+  password: Scalars['String'];
+}>;
+
+export type tokenAuthMutation = {
+  __typename?: 'Mutation';
+  tokenAuth?: { __typename?: 'ObtainJSONWebToken'; token: string } | null;
+};
+
+export type logoutMutationVariables = Exact<{ [key: string]: never }>;
+
+export type logoutMutation = {
+  __typename?: 'Mutation';
+  logout?: { __typename?: 'LogoutMutation'; success?: boolean | null } | null;
+};
 
 export type ChatFragmentFragment = {
   __typename?: 'Chat';
@@ -71,9 +132,9 @@ export type ChatFragmentFragment = {
   name: string;
 };
 
-export type chatsQueryVariables = Exact<{ [key: string]: never }>;
+export type myChatsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type chatsQuery = {
+export type myChatsQuery = {
   __typename?: 'Query';
   myChats?: Array<{
     __typename?: 'Chat';
