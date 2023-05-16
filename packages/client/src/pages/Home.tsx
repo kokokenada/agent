@@ -20,7 +20,10 @@ import {
 import { useChatApi } from '@src/api/use-chat-api';
 import { ClientLogger } from '@src/client-logger';
 import withLayout from '@src/layout/withLayout';
-import { ChatFragmentFragment } from '@src/api/types';
+import {
+  ChatFragmentFragment,
+  ChatMessageFragmentFragment,
+} from '@src/api/types';
 
 if (styles) console.log('styles loaded'); // Trick vite into loading the CSS
 
@@ -28,6 +31,7 @@ const HomeInner = () => {
   const navigate = useNavigate();
   const chatApi = useChatApi();
   const [myChats, setMyChats] = useState<ChatFragmentFragment[]>([]);
+  const [messages, setMessages] = useState<ChatMessageFragmentFragment[]>([]);
 
   useEffect(() => {
     const chats = chatApi.myChats().then((chats) => {
@@ -39,6 +43,14 @@ const HomeInner = () => {
     DEBUG && ClientLogger.debug('chats', '', chats);
   }, []);
 
+  const getMessages = async (chatId: string) => {
+    const messages = await chatApi.messages(chatId);
+    DEBUG && ClientLogger.debug('messages', '', messages);
+    if (messages.data.messages) {
+      setMessages(messages.data.messages);
+    }
+  };
+
   return (
     <>
       <div style={{ position: 'relative', height: '500px' }}>
@@ -47,9 +59,13 @@ const HomeInner = () => {
             <ConversationList>
               {myChats.map((chat) => (
                 <Conversation
+                  key={chat.id}
                   name={chat.name}
                   lastSenderName="Lilly"
                   info="Yes i can do it for you"
+                  onClick={() => {
+                    getMessages(chat.id);
+                  }}
                 ></Conversation>
               ))}
             </ConversationList>

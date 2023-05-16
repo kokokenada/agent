@@ -71,6 +71,8 @@ DJANGO_APPS = [
     "django.forms",
     "corsheaders",
     "graphene_django",
+    "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
+    "django_filters",
 ]
 THIRD_PARTY_APPS = [
     "crispy_forms",
@@ -328,6 +330,8 @@ JWT_AUTH = {
 
 GRAPHQL_JWT = {
     "JWT_VERIFY_EXPIRATION": True,
-    "JWT_EXPIRATION_DELTA": timedelta(minutes=5),
+    "JWT_ALLOW_REFRESH": True,
+    "JWT_EXPIRATION_DELTA": timedelta(minutes=15),
     "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
+    "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
 }

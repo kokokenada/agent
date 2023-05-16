@@ -1,5 +1,6 @@
 from chat_messages.models import ChatParticipant
 from django.contrib.auth import get_user_model
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
 from agent.users.constants import SYSTEM_USER_ID
 
@@ -28,23 +29,23 @@ def create_chat(name, user):
     return chat
 
 
-# def get_my_chats(user):
-#     print(user)
-#     if user.is_anonymous:
-#         raise Exception("Authentication required")
-#     chats = user.chats_participated.all()
-#     print(chats)
-#     print("here2")
-
-#     chats2 = Chat.objects.all()
-#     print(chats2)
-#     print("here3")
-#     return chats
-
-
 def get_my_chats(user):
     if user.is_anonymous:
         raise Exception("Authentication required")
 
     chats = Chat.objects.filter(participants__user=user)
     return chats
+
+
+def apply_pagination(queryset, kwargs):
+    paginator = Paginator(queryset, kwargs.get("first", 10))
+    page = kwargs.get("page", 1)
+
+    try:
+        items = paginator.page(page)
+    except PageNotAnInteger:
+        items = paginator.page(1)
+    except EmptyPage:
+        items = paginator.page(paginator.num_pages)
+
+    return items

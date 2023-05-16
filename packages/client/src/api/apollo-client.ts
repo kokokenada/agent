@@ -3,12 +3,14 @@ import {
   createHttpLink,
   ApolloLink,
   InMemoryCache,
+  gql,
 } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 
 import { UserContextType } from '../auth/user-context';
 import { ClientLogger } from '../client-logger';
 import { getEnvVar } from './utils';
+import { ROUTES } from '@src/Routes';
 
 export interface ApolloClientContext {
   userContext?: UserContextType;
@@ -25,7 +27,7 @@ export const apiContext = (
   };
 };
 
-const DEBUG = false;
+const DEBUG = true;
 const VITE_SERVER_API_URL = getEnvVar('VITE_API_URL');
 
 ClientLogger.log(
@@ -57,17 +59,23 @@ export const getApolloClient = () => {
         operation,
       });
       if (graphQLErrors) {
+        DEBUG &&
+          ClientLogger.debug('apollo-client', 'graphQLErrors', {
+            graphQLErrors,
+          });
         graphQLErrors.forEach(({ extensions, message, locations, path }) => {
           ClientLogger.error(
             'apollo-client.getApolloClient',
             `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
           );
-          if (extensions?.code === 'UNAUTHENTICATED') {
+          if (message === 'Authentication required') {
             ClientLogger.error(
               'apollo-client.getApolloClient',
               `detected unauthenticated - why was this not picked up by token-refresh?}`,
             );
-            // logout();
+            if (singleton) {
+              logout();
+            }
           }
         });
       }
@@ -108,4 +116,24 @@ export const getApolloClient = () => {
     }),
   };
   return singleton?.apolloClient;
+};
+
+export const logout = async () => {
+  const mutate = singleton?.apolloClient.mutate;
+  // hoisted up the dependency chain to avoid circular dependencies
+  DEBUG && ClientLogger.debug('apollo-client', `started`, { mutate });
+  if (mutate) {
+    const resp = await mutate({
+      mutation: gql`
+        mutation logout {
+          logout {
+            success
+          }
+        }
+      `,
+      fetchPolicy: 'network-only',
+    });
+    DEBUG && ClientLogger.debug('apollo-client', 'Response', resp);
+    window.location.href = ROUTES.LOGIN;
+  }
 };

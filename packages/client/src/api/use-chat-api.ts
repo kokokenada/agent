@@ -15,6 +15,13 @@ export const CHAT_FIELDS = gql`
   }
 `;
 
+export const CHAT_MESSAGE_FIELDS = gql`
+  fragment ChatMessageFragment on ChatMessage {
+    id
+    content
+  }
+`;
+
 const DEBUG = true;
 
 export function useChatApi() {
@@ -37,6 +44,28 @@ export function useChatApi() {
         fetchPolicy: 'network-only',
       });
       DEBUG && ClientLogger.debug('useCsaApi.getMe', 'Response', resp);
+      return resp;
+    },
+
+    async messages(chatId: string) {
+      DEBUG && ClientLogger.debug('useChatApi.messages', `started`);
+      const resp = await api.query<any, any>({
+        query: gql`
+          ${CHAT_MESSAGE_FIELDS}
+          query chatMessages($chatId: ID!) {
+            chatMessages(chatId: $chatId) {
+              edges {
+                node {
+                  ...ChatMessageFragment
+                }
+              }
+            }
+          }
+        `,
+        variables: { chatId },
+        fetchPolicy: 'network-only',
+      });
+      DEBUG && ClientLogger.debug('useChatApi.messages', 'Response', resp);
       return resp;
     },
   };
