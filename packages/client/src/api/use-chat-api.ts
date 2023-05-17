@@ -7,6 +7,7 @@ import {
 import { ClientLogger } from '../client-logger';
 
 import { useApi } from './use-api';
+import { createChatMutation, createChatMutationVariables } from './types';
 
 export const CHAT_FIELDS = gql`
   fragment ChatFragment on Chat {
@@ -66,6 +67,28 @@ export function useChatApi() {
         fetchPolicy: 'network-only',
       });
       DEBUG && ClientLogger.debug('useChatApi.messages', 'Response', resp);
+      return resp;
+    },
+
+    async createChat(name: string) {
+      DEBUG && ClientLogger.debug('useChatApi.createChat', `started`);
+      const resp = await api.mutate<
+        createChatMutation,
+        createChatMutationVariables
+      >({
+        mutation: gql`
+          ${CHAT_FIELDS}
+          mutation createChat($name: String!) {
+            createChat(name: $name) {
+              chat {
+                ...ChatFragment
+              }
+            }
+          }
+        `,
+        variables: { name },
+      });
+      DEBUG && ClientLogger.debug('useChatApi.createChat', 'Response', resp);
       return resp;
     },
   };

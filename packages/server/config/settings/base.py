@@ -72,7 +72,7 @@ DJANGO_APPS = [
     "corsheaders",
     "graphene_django",
     "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
-    "django_filters",
+    # "django_filters",
 ]
 THIRD_PARTY_APPS = [
     "crispy_forms",

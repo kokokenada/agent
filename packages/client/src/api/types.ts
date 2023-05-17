@@ -221,3 +221,15 @@ export type chatMessagesQuery = {
     } | null>;
   } | null;
 };
+
+export type createChatMutationVariables = Exact<{
+  name: Scalars['String'];
+}>;
+
+export type createChatMutation = {
+  __typename?: 'Mutation';
+  createChat?: {
+    __typename?: 'CreateChatMutation';
+    chat?: { __typename?: 'Chat'; id: string; name: string } | null;
+  } | null;
+};
