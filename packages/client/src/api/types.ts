@@ -233,3 +233,20 @@ export type createChatMutation = {
     chat?: { __typename?: 'Chat'; id: string; name: string } | null;
   } | null;
 };
+
+export type createChatMessageMutationVariables = Exact<{
+  chatId: Scalars['ID'];
+  content: Scalars['String'];
+}>;
+
+export type createChatMessageMutation = {
+  __typename?: 'Mutation';
+  createChatMessage?: {
+    __typename?: 'CreateChatMessageMutation';
+    chatMessage?: {
+      __typename?: 'ChatMessage';
+      id: string;
+      content: string;
+    } | null;
+  } | null;
+};

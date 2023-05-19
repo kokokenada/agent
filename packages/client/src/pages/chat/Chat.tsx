@@ -33,6 +33,7 @@ export const Chat = () => {
   const navigate = useNavigate();
   const chatApi = useChatApi();
   const [myChats, setMyChats] = useState<ChatFragmentFragment[]>([]);
+  const [chatId, setChatId] = useState<string | undefined>(undefined);
   const [messages, setMessages] = useState<ChatMessageFragmentFragment[]>([]);
   const [addNewChatDialog, setAddNewChatDialog] = useState<boolean>(false);
 
@@ -47,11 +48,18 @@ export const Chat = () => {
   }, []);
 
   const getMessages = async (chatId: string) => {
-    const messages = await chatApi.messages(chatId);
-    DEBUG && ClientLogger.debug('messages', '', messages);
-    if (messages.data.messages) {
-      setMessages(messages.data.messages);
+    const chatMessages = await chatApi.chatMessages(chatId);
+    DEBUG && ClientLogger.debug('getMessages', '', { chatMessages, chatId });
+    if (chatMessages.data.chatMessages) {
+      const list: ChatMessageFragmentFragment[] = [];
+      for (const edge of chatMessages.data.chatMessages.edges) {
+        if (edge?.node) {
+          list.push(edge.node);
+        }
+      }
+      setMessages(list);
     }
+    setChatId(chatId);
   };
 
   const onSend = async (
@@ -67,7 +75,14 @@ export const Chat = () => {
         innerText,
         nodes,
       });
+    if (!chatId) {
+      ClientLogger.error('send', 'chatId is undefined');
+      return;
+    }
+    chatApi.createChatMessage(chatId, innerText);
   };
+
+  DEBUG && ClientLogger.debug('Chats', 'render', { myChats, messages, chatId });
 
   return (
     <>
@@ -92,19 +107,20 @@ export const Chat = () => {
                   onClick={() => {
                     getMessages(chat.id);
                   }}
+                  active={chatId === chat.id}
                 ></Conversation>
               ))}
             </ConversationList>
           </Sidebar>
           <ChatContainer>
             <MessageList>
-              <Message
-                model={{
-                  message: 'Hello my friend',
-                  sentTime: 'just now',
-                  sender: 'Joe',
-                }}
-              />
+              {messages.map((message) => (
+                <Message
+                  model={{
+                    message: message.content,
+                  }}
+                />
+              ))}
             </MessageList>
             <MessageInput placeholder="Type message here" onSend={onSend} />
           </ChatContainer>

@@ -7,7 +7,14 @@ import {
 import { ClientLogger } from '../client-logger';
 
 import { useApi } from './use-api';
-import { createChatMutation, createChatMutationVariables } from './types';
+import {
+  CreateChatMessageMutation,
+  createChatMutation,
+  createChatMutationVariables,
+  MutationcreateChatMessageArgs,
+  chatMessagesQueryVariables,
+  chatMessagesQuery,
+} from './types';
 
 export const CHAT_FIELDS = gql`
   fragment ChatFragment on Chat {
@@ -48,9 +55,12 @@ export function useChatApi() {
       return resp;
     },
 
-    async messages(chatId: string) {
+    async chatMessages(chatId: string) {
       DEBUG && ClientLogger.debug('useChatApi.messages', `started`);
-      const resp = await api.query<any, any>({
+      const resp = await api.query<
+        chatMessagesQuery,
+        chatMessagesQueryVariables
+      >({
         query: gql`
           ${CHAT_MESSAGE_FIELDS}
           query chatMessages($chatId: ID!) {
@@ -89,6 +99,29 @@ export function useChatApi() {
         variables: { name },
       });
       DEBUG && ClientLogger.debug('useChatApi.createChat', 'Response', resp);
+      return resp;
+    },
+
+    async createChatMessage(chatId: string, content: string) {
+      DEBUG && ClientLogger.debug('useChatApi.createChat', `started`);
+      const resp = await api.mutate<
+        CreateChatMessageMutation,
+        MutationcreateChatMessageArgs
+      >({
+        mutation: gql`
+          ${CHAT_MESSAGE_FIELDS}
+          mutation createChatMessage($chatId: ID!, $content: String!) {
+            createChatMessage(chatId: $chatId, content: $content) {
+              chatMessage {
+                ...ChatMessageFragment
+              }
+            }
+          }
+        `,
+        variables: { chatId, content },
+      });
+      DEBUG &&
+        ClientLogger.debug('useChatApi.createChatMessage', 'Response', resp);
       return resp;
     },
   };

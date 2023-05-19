@@ -33,7 +33,7 @@ def get_my_chats(user):
     if user.is_anonymous:
         raise Exception("Authentication required")
 
-    chats = Chat.objects.filter(participants__user=user)
+    chats = Chat.objects.filter(participants__user=user).distinct()
     return chats
 
 

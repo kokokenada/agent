@@ -6,6 +6,7 @@ from graphene_django.filter import DjangoFilterConnectionField
 
 from .models import Chat as DbChat
 from .models import ChatMessage as DbChatMessage
+from .models import ChatParticipant as DbChatParticipant
 from .utils import apply_pagination, create_chat, get_my_chats
 
 User = get_user_model()
@@ -67,7 +68,7 @@ class Query(graphene.ObjectType):
         chat_messages = DbChatMessage.objects.filter(chat_id=chat.id)
 
         # Apply pagination to the chat messages
-        return apply_pagination(chat_messages, kwargs)
+        return chat_messages  # apply_pagination(chat_messages, kwargs)
 
 
 class CreateChatMessageMutation(graphene.Mutation):
@@ -82,12 +83,13 @@ class CreateChatMessageMutation(graphene.Mutation):
         if user.is_anonymous:
             raise Exception("Authentication required")
 
-        chat = Chat.objects.get(id=chat_id)
-
-        if user not in chat.participants.all():
+        chat = DbChat.objects.get(id=chat_id)
+        chat_participant = DbChatParticipant.objects.get(chat_id=chat_id, user_id=user.id)
+        print(chat_participant)
+        if not chat_participant:
             raise Exception("Not authorized to send messages in this chat")
 
-        chat_message = DbChatMessage(chat=chat, sender=user, content=content)
+        chat_message = DbChatMessage(chat=chat, sender_user=user, content=content)
         chat_message.save()
 
         return CreateChatMessageMutation(chat_message=chat_message)

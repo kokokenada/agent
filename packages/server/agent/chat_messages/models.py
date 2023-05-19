@@ -19,6 +19,9 @@ class ChatParticipant(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="chats_participated")
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = (("chat", "user"),)
+
     def __str__(self):
         return f"{self.user.name} in {self.chat.name}"
 
