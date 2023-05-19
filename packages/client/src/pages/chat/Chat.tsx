@@ -79,7 +79,10 @@ export const Chat = () => {
       ClientLogger.error('send', 'chatId is undefined');
       return;
     }
-    chatApi.createChatMessage(chatId, innerText);
+    const newMessge = await chatApi.createChatMessage(chatId, innerText);
+    if (newMessge.data?.createChatMessage?.chatMessage) {
+      setMessages([...messages, newMessge.data.createChatMessage.chatMessage]);
+    }
   };
 
   DEBUG && ClientLogger.debug('Chats', 'render', { myChats, messages, chatId });

@@ -14,6 +14,7 @@ import {
   MutationcreateChatMessageArgs,
   chatMessagesQueryVariables,
   chatMessagesQuery,
+  createChatMessageMutation,
 } from './types';
 
 export const CHAT_FIELDS = gql`
@@ -105,7 +106,7 @@ export function useChatApi() {
     async createChatMessage(chatId: string, content: string) {
       DEBUG && ClientLogger.debug('useChatApi.createChat', `started`);
       const resp = await api.mutate<
-        CreateChatMessageMutation,
+        createChatMessageMutation,
         MutationcreateChatMessageArgs
       >({
         mutation: gql`
