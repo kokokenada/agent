@@ -119,6 +119,7 @@ export const Chat = () => {
             <MessageList>
               {messages.map((message) => (
                 <Message
+                  key={message.id}
                   model={{
                     message: message.content,
                   }}

@@ -4,6 +4,7 @@ from graphene import Node
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 
+from .llm_utils import generate_response
 from .models import Chat as DbChat
 from .models import ChatMessage as DbChatMessage
 from .models import ChatParticipant as DbChatParticipant
@@ -47,7 +48,9 @@ class ChatMessage(DjangoObjectType):
 
 class Query(graphene.ObjectType):
     my_chats = graphene.List(Chat)
-    chat_messages = DjangoFilterConnectionField(ChatMessage, chat_id=graphene.ID(required=True))
+    chat_messages = DjangoFilterConnectionField(
+        ChatMessage, chat_id=graphene.ID(required=True)
+    )
 
     def resolve_my_chats(self, info):
         user = info.context.user
@@ -84,13 +87,17 @@ class CreateChatMessageMutation(graphene.Mutation):
             raise Exception("Authentication required")
 
         chat = DbChat.objects.get(id=chat_id)
-        chat_participant = DbChatParticipant.objects.get(chat_id=chat_id, user_id=user.id)
+        chat_participant = DbChatParticipant.objects.get(
+            chat_id=chat_id, user_id=user.id
+        )
         print(chat_participant)
         if not chat_participant:
             raise Exception("Not authorized to send messages in this chat")
 
         chat_message = DbChatMessage(chat=chat, sender_user=user, content=content)
         chat_message.save()
+
+        generate_response(content)
 
         return CreateChatMessageMutation(chat_message=chat_message)
 

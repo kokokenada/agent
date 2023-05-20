@@ -23,3 +23,6 @@ django-cors-headers==3.14.0
 django-graphql-jwt==0.3.4
 # django_filters==0.23.2
 graphene_django_filter=0.6.4
+
+# Langchain stuff
+langchain[llms]==0.0.174
