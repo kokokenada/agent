@@ -1,10 +1,13 @@
 import graphene
 from django.contrib.auth import get_user_model
+from graphene import Node
 from graphene_django import DjangoObjectType
+from graphene_django.filter import DjangoFilterConnectionField
 
 from .models import Chat as DbChat
-from .models import ChatMessage
-from .utils import create_chat, get_my_chats
+from .models import ChatMessage as DbChatMessage
+from .models import ChatParticipant as DbChatParticipant
+from .utils import apply_pagination, create_chat, get_my_chats
 
 User = get_user_model()
 
@@ -33,30 +36,43 @@ class CreateChatMutation(graphene.Mutation):
         return CreateChatMutation(chat=chat)
 
 
-class ChatMessageType(DjangoObjectType):
+class ChatMessage(DjangoObjectType):
     class Meta:
-        model = ChatMessage
+        model = DbChatMessage
+        interfaces = (Node,)
+        fields = ("id", "content", "sender_user", "created_at")
+        filter_fields = ["id", "chat"]
+        order_by = ["created_at"]
 
 
 class Query(graphene.ObjectType):
     my_chats = graphene.List(Chat)
+    chat_messages = DjangoFilterConnectionField(ChatMessage, chat_id=graphene.ID(required=True))
 
     def resolve_my_chats(self, info):
         user = info.context.user
         return get_my_chats(user)
-        # print(user)
-        # if user.is_anonymous:
-        #     raise Exception("Authentication required")
-        # print("here1")
-        # chats = Chat.objects.filter()
-        # # chats = Chat.objects.all()
-        # print(chats)
-        # print("here2")
-        # return chats
+
+    def resolve_chat_messages(self, info, chat_id, **kwargs):
+        user = info.context.user
+        if user.is_anonymous:
+            raise Exception("Authentication required")
+
+        # Get the chat object from the database
+        chat = DbChat.objects.filter(participants__user=user, id=chat_id).first()
+
+        if not chat:
+            raise Exception("Chat not found")
+
+        # Get the chat messages for the chat
+        chat_messages = DbChatMessage.objects.filter(chat_id=chat.id)
+
+        # Apply pagination to the chat messages
+        return chat_messages  # apply_pagination(chat_messages, kwargs)
 
 
 class CreateChatMessageMutation(graphene.Mutation):
-    chat_message = graphene.Field(ChatMessageType)
+    chat_message = graphene.Field(ChatMessage)
 
     class Arguments:
         chat_id = graphene.ID(required=True)
@@ -67,12 +83,13 @@ class CreateChatMessageMutation(graphene.Mutation):
         if user.is_anonymous:
             raise Exception("Authentication required")
 
-        chat = Chat.objects.get(id=chat_id)
-
-        if user not in chat.participants.all():
+        chat = DbChat.objects.get(id=chat_id)
+        chat_participant = DbChatParticipant.objects.get(chat_id=chat_id, user_id=user.id)
+        print(chat_participant)
+        if not chat_participant:
             raise Exception("Not authorized to send messages in this chat")
 
-        chat_message = ChatMessage(chat=chat, sender=user, content=content)
+        chat_message = DbChatMessage(chat=chat, sender_user=user, content=content)
         chat_message.save()
 
         return CreateChatMessageMutation(chat_message=chat_message)

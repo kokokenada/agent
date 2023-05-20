@@ -17,7 +17,7 @@ import {
 } from '@apollo/client/react/types/types';
 import { DocumentNode } from 'graphql';
 
-import { getApolloClient } from './apollo-client';
+import { getApolloClient, logout } from './apollo-client';
 import { UserContext } from '../auth/user-context';
 import { useContext } from 'react';
 
@@ -74,5 +74,8 @@ export function useApi() {
       });
     },
     userContext,
+    logout: () => {
+      logout();
+    },
   };
 }
