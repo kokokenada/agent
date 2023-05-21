@@ -8,7 +8,7 @@ from .llm_utils import generate_response
 from .models import Chat as DbChat
 from .models import ChatMessage as DbChatMessage
 from .models import ChatParticipant as DbChatParticipant
-from .utils import apply_pagination, create_chat, get_my_chats
+from .utils import apply_pagination, create_chat, get_my_chats, write_message
 
 User = get_user_model()
 
@@ -48,9 +48,7 @@ class ChatMessage(DjangoObjectType):
 
 class Query(graphene.ObjectType):
     my_chats = graphene.List(Chat)
-    chat_messages = DjangoFilterConnectionField(
-        ChatMessage, chat_id=graphene.ID(required=True)
-    )
+    chat_messages = DjangoFilterConnectionField(ChatMessage, chat_id=graphene.ID(required=True))
 
     def resolve_my_chats(self, info):
         user = info.context.user
@@ -83,21 +81,9 @@ class CreateChatMessageMutation(graphene.Mutation):
 
     def mutate(self, info, chat_id, content):
         user = info.context.user
-        if user.is_anonymous:
-            raise Exception("Authentication required")
+        chat_message = write_message(user, chat_id, content)
 
-        chat = DbChat.objects.get(id=chat_id)
-        chat_participant = DbChatParticipant.objects.get(
-            chat_id=chat_id, user_id=user.id
-        )
-        print(chat_participant)
-        if not chat_participant:
-            raise Exception("Not authorized to send messages in this chat")
-
-        chat_message = DbChatMessage(chat=chat, sender_user=user, content=content)
-        chat_message.save()
-
-        generate_response(content)
+        generate_response(chat_id, content)
 
         return CreateChatMessageMutation(chat_message=chat_message)
 
