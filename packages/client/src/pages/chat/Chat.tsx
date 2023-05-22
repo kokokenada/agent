@@ -1,8 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import classNames from 'classnames';
 import Paper from '@mui/material/Paper';
 import { v4 as uuidv4 } from 'uuid';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 // @ts-ignore
 import styles from '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
@@ -25,6 +26,7 @@ import {
 } from '@src/api/types';
 import { Button, Dialog, TextField } from '@mui/material';
 import { NewChatDialog } from './NewChatDialog';
+import { getEnvVar } from '@src/api/utils';
 
 const DEBUG = true;
 
@@ -37,6 +39,52 @@ export const Chat = () => {
   const [chatId, setChatId] = useState<string | undefined>(undefined);
   const [messages, setMessages] = useState<ChatMessageFragmentFragment[]>([]);
   const [addNewChatDialog, setAddNewChatDialog] = useState<boolean>(false);
+  const [messageHistory, setMessageHistory] = useState<any[]>([]);
+  const VITE_SERVER_API_URL = getEnvVar('VITE_API_URL');
+  const [socketUrl, setSocketUrl] = useState(
+    VITE_SERVER_API_URL.replace('graphql', `ws/chat/${chatId}`).replace(
+      'http',
+      'ws',
+    ),
+  ); // test: ws://echo.websocket.events
+  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
+
+  const calcUrl = (chatId: string): string => {
+    return VITE_SERVER_API_URL.replace('graphql', `ws/chat/${chatId}/`).replace(
+      'http',
+      'ws',
+    );
+  };
+
+  useEffect(() => {
+    if (lastMessage !== null) {
+      setMessageHistory((prev) => prev.concat(lastMessage));
+    }
+  }, [lastMessage, setMessageHistory]);
+
+  const handleClickChangeSocketUrl = useCallback(
+    () => setSocketUrl('wss://demos.kaazing.com/echo'),
+    [],
+  );
+
+  const handleClickSendMessage = useCallback(() => sendMessage('Hello'), []);
+
+  const connectionStatus = {
+    [ReadyState.CONNECTING]: 'Connecting',
+    [ReadyState.OPEN]: 'Open',
+    [ReadyState.CLOSING]: 'Closing',
+    [ReadyState.CLOSED]: 'Closed',
+    [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
+  }[readyState];
+  DEBUG &&
+    ClientLogger.debug('connectionStatus', '', {
+      VITE_SERVER_API_URL,
+      connectionStatus,
+      readyState,
+      lastMessage,
+      socketUrl,
+      messageHistory,
+    });
 
   useEffect(() => {
     const chats = chatApi.myChats().then((chats) => {
@@ -61,6 +109,7 @@ export const Chat = () => {
       setMessages(list);
     }
     setChatId(chatId);
+    setSocketUrl(calcUrl(chatId));
   };
 
   const onSend = async (
@@ -94,6 +143,24 @@ export const Chat = () => {
 
   return (
     <>
+      <div>
+        <button onClick={handleClickChangeSocketUrl}>
+          Click Me to change Socket Url
+        </button>
+        <button
+          onClick={handleClickSendMessage}
+          disabled={readyState !== ReadyState.OPEN}
+        >
+          Click Me to send 'Hello'
+        </button>
+        <span>The WebSocket is currently {connectionStatus}</span>
+        {lastMessage ? <span>Last message: {lastMessage.data}</span> : null}
+        <ul>
+          {messageHistory.map((message, idx) => (
+            <span key={idx}>{message ? message.data : null}</span>
+          ))}
+        </ul>
+      </div>
       <div style={{ position: 'relative', height: '500px' }}>
         <MainContainer>
           <Sidebar position="left" scrollable={false}>

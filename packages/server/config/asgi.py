@@ -14,8 +14,11 @@ from pathlib import Path
 # import django_eventstream
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.security.websocket import AllowedHostsOriginValidator
 from django.core.asgi import get_asgi_application
 from django.urls import path, re_path
+
+from agent.chat_messages.routing import websocket_urlpatterns
 
 # This allows easy placement of apps within the interior
 # agent directory.
@@ -54,5 +57,6 @@ application = ProtocolTypeRouter(
                 re_path(r"", django_application),
             ]
         ),
+        "websocket": AllowedHostsOriginValidator(AuthMiddlewareStack(URLRouter(websocket_urlpatterns))),
     }
 )
