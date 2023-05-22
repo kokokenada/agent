@@ -11,7 +11,7 @@ import os
 import sys
 from pathlib import Path
 
-import django_eventstream
+# import django_eventstream
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
@@ -46,11 +46,11 @@ application = ProtocolTypeRouter(
     {
         "http": URLRouter(
             [
-                path(
-                    "events/",
-                    AuthMiddlewareStack(URLRouter(django_eventstream.routing.urlpatterns)),
-                    {"channels": ["test"]},
-                ),
+                # path(
+                #     "events/",
+                #     AuthMiddlewareStack(URLRouter(django_eventstream.routing.urlpatterns)),
+                #     {"channels": ["test"]},
+                # ),
                 re_path(r"", django_application),
             ]
         ),

@@ -18,12 +18,13 @@ export interface Scalars {
   Float: number;
   DateTime: any;
   GenericScalar: any;
+  UUID: any;
 }
 
 export interface Chat {
   __typename?: 'Chat';
   createdAt: Scalars['DateTime'];
-  id: Scalars['ID'];
+  id: Scalars['UUID'];
   messages: ChatMessageConnection;
   name: Scalars['String'];
 }
@@ -31,7 +32,7 @@ export interface Chat {
 export interface ChatmessagesArgs {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
-  chat?: InputMaybe<Scalars['ID']>;
+  chat?: InputMaybe<Scalars['UUID']>;
   first?: InputMaybe<Scalars['Int']>;
   id?: InputMaybe<Scalars['ID']>;
   last?: InputMaybe<Scalars['Int']>;
@@ -40,9 +41,10 @@ export interface ChatmessagesArgs {
 
 export interface ChatMessage extends Node {
   __typename?: 'ChatMessage';
+  blah?: Maybe<Scalars['String']>;
   content: Scalars['String'];
   createdAt: Scalars['DateTime'];
-  /** The ID of the object. */
+  /** The ID of the object */
   id: Scalars['ID'];
 }
 
@@ -96,10 +98,11 @@ export interface MutationcreateChatArgs {
 export interface MutationcreateChatMessageArgs {
   chatId: Scalars['ID'];
   content: Scalars['String'];
+  id: Scalars['ID'];
 }
 
 export interface MutationrefreshTokenArgs {
-  token?: InputMaybe<Scalars['String']>;
+  refreshToken?: InputMaybe<Scalars['String']>;
 }
 
 export interface MutationtokenAuthArgs {
@@ -113,7 +116,7 @@ export interface MutationverifyTokenArgs {
 
 /** An object with an ID */
 export interface Node {
-  /** The ID of the object. */
+  /** The ID of the object */
   id: Scalars['ID'];
 }
 
@@ -122,6 +125,7 @@ export interface ObtainJSONWebToken {
   __typename?: 'ObtainJSONWebToken';
   payload: Scalars['GenericScalar'];
   refreshExpiresIn: Scalars['Int'];
+  refreshToken: Scalars['String'];
   token: Scalars['String'];
 }
 
@@ -147,7 +151,7 @@ export interface Query {
 export interface QuerychatMessagesArgs {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
-  chat?: InputMaybe<Scalars['ID']>;
+  chat?: InputMaybe<Scalars['UUID']>;
   chatId: Scalars['ID'];
   first?: InputMaybe<Scalars['Int']>;
   id?: InputMaybe<Scalars['ID']>;
@@ -159,6 +163,7 @@ export interface Refresh {
   __typename?: 'Refresh';
   payload: Scalars['GenericScalar'];
   refreshExpiresIn: Scalars['Int'];
+  refreshToken: Scalars['String'];
   token: Scalars['String'];
 }
 
@@ -186,7 +191,7 @@ export type tokenAuthMutation = {
 
 export type ChatFragmentFragment = {
   __typename?: 'Chat';
-  id: string;
+  id: any;
   name: string;
 };
 
@@ -200,11 +205,7 @@ export type myChatsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type myChatsQuery = {
   __typename?: 'Query';
-  myChats?: Array<{
-    __typename?: 'Chat';
-    id: string;
-    name: string;
-  } | null> | null;
+  myChats?: Array<{ __typename?: 'Chat'; id: any; name: string } | null> | null;
 };
 
 export type chatMessagesQueryVariables = Exact<{
@@ -230,11 +231,12 @@ export type createChatMutation = {
   __typename?: 'Mutation';
   createChat?: {
     __typename?: 'CreateChatMutation';
-    chat?: { __typename?: 'Chat'; id: string; name: string } | null;
+    chat?: { __typename?: 'Chat'; id: any; name: string } | null;
   } | null;
 };
 
 export type createChatMessageMutationVariables = Exact<{
+  id: Scalars['ID'];
   chatId: Scalars['ID'];
   content: Scalars['String'];
 }>;

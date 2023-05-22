@@ -1,6 +1,7 @@
 import os
+import uuid
 
-from django_eventstream import send_event
+# from django_eventstream import send_event
 from langchain.llms import OpenAI
 
 from .utils import get_system_user, write_message
@@ -13,9 +14,9 @@ def generate_response(chat_id, message):
     try:
         resp = llm(message)
         print(f"Response: {resp}")
-        send_event("test", "message", {"text": "hello world"})
+        # send_event("test", "message", {"text": "hello world"})
 
-        write_message(get_system_user(), chat_id, resp)
+        write_message(uuid.uuid4(), get_system_user(), chat_id, resp)
         return resp
     except Exception as e:
         print(f"Error: {e}")

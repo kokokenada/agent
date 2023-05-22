@@ -38,10 +38,12 @@ class CreateChatMutation(graphene.Mutation):
 
 
 class ChatMessage(DjangoObjectType):
+    blah = graphene.String()
+
     class Meta:
         model = DbChatMessage
         interfaces = (Node,)
-        fields = ("id", "content", "sender_user", "created_at")
+        fields = ("id", "content", "sender_user", "created_at", "blah")
         filter_fields = ["id", "chat"]
         order_by = ["created_at"]
 
@@ -76,12 +78,13 @@ class CreateChatMessageMutation(graphene.Mutation):
     chat_message = graphene.Field(ChatMessage)
 
     class Arguments:
+        id = graphene.ID(required=True)
         chat_id = graphene.ID(required=True)
         content = graphene.String(required=True)
 
-    def mutate(self, info, chat_id, content):
+    def mutate(self, info, id, chat_id, content):
         user = info.context.user
-        chat_message = write_message(user, chat_id, content)
+        chat_message = write_message(id, user, chat_id, content)
 
         generate_response(chat_id, content)
 

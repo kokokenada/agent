@@ -43,6 +43,49 @@
           "description": "Directs the executor to skip this field or fragment when the `if` argument is true.",
           "locations": ["FIELD", "FRAGMENT_SPREAD", "INLINE_FRAGMENT"],
           "name": "skip"
+        },
+        {
+          "args": [
+            {
+              "defaultValue": "\"No longer supported\"",
+              "description": "Explains why this element was deprecated, usually also including a suggestion for how to access supported similar data. Formatted using the Markdown syntax, as specified by [CommonMark](https://commonmark.org/).",
+              "name": "reason",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ],
+          "description": "Marks an element of a GraphQL schema as no longer supported.",
+          "locations": [
+            "FIELD_DEFINITION",
+            "ARGUMENT_DEFINITION",
+            "INPUT_FIELD_DEFINITION",
+            "ENUM_VALUE"
+          ],
+          "name": "deprecated"
+        },
+        {
+          "args": [
+            {
+              "defaultValue": null,
+              "description": "The URL that specifies the behaviour of this scalar.",
+              "name": "url",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            }
+          ],
+          "description": "Exposes a URL that specifies the behaviour of this scalar.",
+          "locations": ["SCALAR"],
+          "name": "specifiedBy"
         }
       ],
       "mutationType": {
@@ -155,7 +198,7 @@
                   "name": "chat",
                   "type": {
                     "kind": "SCALAR",
-                    "name": "ID",
+                    "name": "UUID",
                     "ofType": null
                   }
                 }
@@ -184,7 +227,7 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": "",
+              "description": null,
               "isDeprecated": false,
               "name": "id",
               "type": {
@@ -192,7 +235,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "SCALAR",
-                  "name": "ID",
+                  "name": "UUID",
                   "ofType": null
                 }
               }
@@ -200,7 +243,7 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": "",
+              "description": null,
               "isDeprecated": false,
               "name": "name",
               "type": {
@@ -216,7 +259,7 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": "",
+              "description": null,
               "isDeprecated": false,
               "name": "createdAt",
               "type": {
@@ -297,13 +340,13 @@
                   "name": "chat",
                   "type": {
                     "kind": "SCALAR",
-                    "name": "ID",
+                    "name": "UUID",
                     "ofType": null
                   }
                 }
               ],
               "deprecationReason": null,
-              "description": "",
+              "description": null,
               "isDeprecated": false,
               "name": "messages",
               "type": {
@@ -324,13 +367,13 @@
           "possibleTypes": null
         },
         {
-          "description": "The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `\"4\"`) or integer (such as `4`) input value will be accepted as an ID.",
+          "description": "Leverages the internal Python implementation of UUID (uuid.UUID) to provide native UUID objects\nin fields, resolvers and input.",
           "enumValues": null,
           "fields": null,
           "inputFields": null,
           "interfaces": null,
           "kind": "SCALAR",
-          "name": "ID",
+          "name": "UUID",
           "possibleTypes": null
         },
         {
@@ -523,7 +566,7 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": "The ID of the object.",
+              "description": "The ID of the object",
               "isDeprecated": false,
               "name": "id",
               "type": {
@@ -539,7 +582,7 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": "",
+              "description": null,
               "isDeprecated": false,
               "name": "content",
               "type": {
@@ -555,7 +598,7 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": "",
+              "description": null,
               "isDeprecated": false,
               "name": "createdAt",
               "type": {
@@ -566,6 +609,18 @@
                   "name": "DateTime",
                   "ofType": null
                 }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "blah",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
               }
             }
           ],
@@ -588,7 +643,7 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": "The ID of the object.",
+              "description": "The ID of the object",
               "isDeprecated": false,
               "name": "id",
               "type": {
@@ -603,7 +658,7 @@
             }
           ],
           "inputFields": null,
-          "interfaces": null,
+          "interfaces": [],
           "kind": "INTERFACE",
           "name": "Node",
           "possibleTypes": [
@@ -615,7 +670,17 @@
           ]
         },
         {
-          "description": "The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31 - 1) and 2^31 - 1 since represented in JSON as double-precision floating point numbers specifiedby [IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point).",
+          "description": "The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `\"4\"`) or integer (such as `4`) input value will be accepted as an ID.",
+          "enumValues": null,
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "kind": "SCALAR",
+          "name": "ID",
+          "possibleTypes": null
+        },
+        {
+          "description": "The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.",
           "enumValues": null,
           "fields": null,
           "inputFields": null,
@@ -709,7 +774,7 @@
                 {
                   "defaultValue": null,
                   "description": null,
-                  "name": "token",
+                  "name": "refreshToken",
                   "type": {
                     "kind": "SCALAR",
                     "name": "String",
@@ -776,6 +841,20 @@
                     "ofType": {
                       "kind": "SCALAR",
                       "name": "String",
+                      "ofType": null
+                    }
+                  }
+                },
+                {
+                  "defaultValue": null,
+                  "description": null,
+                  "name": "id",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "ID",
                       "ofType": null
                     }
                   }
@@ -863,6 +942,22 @@
               "description": null,
               "isDeprecated": false,
               "name": "token",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "refreshToken",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -968,6 +1063,22 @@
                   "ofType": null
                 }
               }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "refreshToken",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
             }
           ],
           "inputFields": null,
@@ -1023,9 +1134,21 @@
           "possibleTypes": null
         },
         {
-          "description": "A GraphQL Schema defines the capabilities of a GraphQL server. It exposes all available types and directives on the server, as well as the entry points for query, mutation and subscription operations.",
+          "description": "A GraphQL Schema defines the capabilities of a GraphQL server. It exposes all available types and directives on the server, as well as the entry points for query, mutation, and subscription operations.",
           "enumValues": null,
           "fields": [
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "description",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
             {
               "args": [],
               "deprecationReason": null,
@@ -1122,7 +1245,7 @@
           "possibleTypes": null
         },
         {
-          "description": "The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.\n\nDepending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name and description, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.",
+          "description": "The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.\n\nDepending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name, description and optional `specifiedByURL`, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.",
           "enumValues": null,
           "fields": [
             {
@@ -1159,6 +1282,18 @@
               "description": null,
               "isDeprecated": false,
               "name": "description",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "specifiedByURL",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -1268,7 +1403,18 @@
               }
             },
             {
-              "args": [],
+              "args": [
+                {
+                  "defaultValue": "false",
+                  "description": null,
+                  "name": "includeDeprecated",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  }
+                }
+              ],
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
@@ -1307,7 +1453,7 @@
           "possibleTypes": null
         },
         {
-          "description": "An enum describing what kind of type a given `__Type` is",
+          "description": "An enum describing what kind of type a given `__Type` is.",
           "enumValues": [
             {
               "deprecationReason": null,
@@ -1323,7 +1469,7 @@
             },
             {
               "deprecationReason": null,
-              "description": "Indicates this type is an interface. `fields` and `possibleTypes` are valid fields.",
+              "description": "Indicates this type is an interface. `fields`, `interfaces`, and `possibleTypes` are valid fields.",
               "isDeprecated": false,
               "name": "INTERFACE"
             },
@@ -1398,7 +1544,18 @@
               }
             },
             {
-              "args": [],
+              "args": [
+                {
+                  "defaultValue": "false",
+                  "description": null,
+                  "name": "includeDeprecated",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  }
+                }
+              ],
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
@@ -1523,9 +1680,37 @@
             {
               "args": [],
               "deprecationReason": null,
-              "description": null,
+              "description": "A GraphQL-formatted string representing the default value for this input value.",
               "isDeprecated": false,
               "name": "defaultValue",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "isDeprecated",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
+              "name": "deprecationReason",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -1643,6 +1828,22 @@
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
+              "name": "isRepeatable",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                }
+              }
+            },
+            {
+              "args": [],
+              "deprecationReason": null,
+              "description": null,
+              "isDeprecated": false,
               "name": "locations",
               "type": {
                 "kind": "NON_NULL",
@@ -1663,7 +1864,18 @@
               }
             },
             {
-              "args": [],
+              "args": [
+                {
+                  "defaultValue": "false",
+                  "description": null,
+                  "name": "includeDeprecated",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  }
+                }
+              ],
               "deprecationReason": null,
               "description": null,
               "isDeprecated": false,
@@ -1683,54 +1895,6 @@
                       "ofType": null
                     }
                   }
-                }
-              }
-            },
-            {
-              "args": [],
-              "deprecationReason": "Use `locations`.",
-              "description": null,
-              "isDeprecated": true,
-              "name": "onOperation",
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "Boolean",
-                  "ofType": null
-                }
-              }
-            },
-            {
-              "args": [],
-              "deprecationReason": "Use `locations`.",
-              "description": null,
-              "isDeprecated": true,
-              "name": "onFragment",
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "Boolean",
-                  "ofType": null
-                }
-              }
-            },
-            {
-              "args": [],
-              "deprecationReason": "Use `locations`.",
-              "description": null,
-              "isDeprecated": true,
-              "name": "onField",
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "Boolean",
-                  "ofType": null
                 }
               }
             }
@@ -1788,6 +1952,12 @@
             },
             {
               "deprecationReason": null,
+              "description": "Location adjacent to a variable definition.",
+              "isDeprecated": false,
+              "name": "VARIABLE_DEFINITION"
+            },
+            {
+              "deprecationReason": null,
               "description": "Location adjacent to a schema definition.",
               "isDeprecated": false,
               "name": "SCHEMA"
@@ -1800,7 +1970,7 @@
             },
             {
               "deprecationReason": null,
-              "description": "Location adjacent to an object definition.",
+              "description": "Location adjacent to an object type definition.",
               "isDeprecated": false,
               "name": "OBJECT"
             },
@@ -1842,7 +2012,7 @@
             },
             {
               "deprecationReason": null,
-              "description": "Location adjacent to an input object definition.",
+              "description": "Location adjacent to an input object type definition.",
               "isDeprecated": false,
               "name": "INPUT_OBJECT"
             },

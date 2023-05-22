@@ -103,7 +103,7 @@ export function useChatApi() {
       return resp;
     },
 
-    async createChatMessage(chatId: string, content: string) {
+    async createChatMessage(id: string, chatId: string, content: string) {
       DEBUG && ClientLogger.debug('useChatApi.createChat', `started`);
       const resp = await api.mutate<
         createChatMessageMutation,
@@ -111,15 +111,19 @@ export function useChatApi() {
       >({
         mutation: gql`
           ${CHAT_MESSAGE_FIELDS}
-          mutation createChatMessage($chatId: ID!, $content: String!) {
-            createChatMessage(chatId: $chatId, content: $content) {
+          mutation createChatMessage(
+            $id: ID!
+            $chatId: ID!
+            $content: String!
+          ) {
+            createChatMessage(id: $id, chatId: $chatId, content: $content) {
               chatMessage {
                 ...ChatMessageFragment
               }
             }
           }
         `,
-        variables: { chatId, content },
+        variables: { id, chatId, content },
       });
       DEBUG &&
         ClientLogger.debug('useChatApi.createChatMessage', 'Response', resp);

@@ -72,9 +72,9 @@ DJANGO_APPS = [
     "corsheaders",
     "graphene_django",
     "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
-    # "django_filters",
+    "django_filters",
     "channels",
-    "django_eventstream",
+    # "django_eventstream",
 ]
 THIRD_PARTY_APPS = [
     "crispy_forms",
@@ -147,7 +147,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django_grip.GripMiddleware",
+    # "django_grip.GripMiddleware",
 ]
 
 # STATIC

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import classNames from 'classnames';
 import Paper from '@mui/material/Paper';
+import { v4 as uuidv4 } from 'uuid';
 
 // @ts-ignore
 import styles from '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
@@ -79,7 +80,11 @@ export const Chat = () => {
       ClientLogger.error('send', 'chatId is undefined');
       return;
     }
-    const newMessge = await chatApi.createChatMessage(chatId, innerText);
+    const newMessge = await chatApi.createChatMessage(
+      uuidv4(),
+      chatId,
+      innerText,
+    );
     if (newMessge.data?.createChatMessage?.chatMessage) {
       setMessages([...messages, newMessge.data.createChatMessage.chatMessage]);
     }

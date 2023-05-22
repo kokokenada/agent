@@ -19,6 +19,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "5.11.16",
     "@mui/material": "5.12.3",
+    "@types/uuid": "^9.0.1",
     "classnames": "^2.3.2",
     "graphql": "16.6.0",
     "jwt-decode": "3.1.2",
@@ -27,7 +28,8 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.43.9",
     "react-router-dom": "6.11.0",
-    "safe-json-stringify": "^1.2.0"
+    "safe-json-stringify": "^1.2.0",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@graphql-codegen/add": "4.0.1",

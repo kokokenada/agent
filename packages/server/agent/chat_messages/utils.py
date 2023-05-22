@@ -42,7 +42,7 @@ def get_my_chats(user):
     return chats
 
 
-def write_message(user, chat_id, content):
+def write_message(id, user, chat_id, content):
     if user.is_anonymous:
         raise Exception("Authentication required")
 
@@ -52,7 +52,7 @@ def write_message(user, chat_id, content):
     if not chat_participant:
         raise Exception("Not authorized to send messages in this chat")
 
-    chat_message = ChatMessage(chat=chat, sender_user=user, content=content)
+    chat_message = ChatMessage(id=id, chat=chat, sender_user=user, content=content)
     chat_message.save()
     return chat_message
 
