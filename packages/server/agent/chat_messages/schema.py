@@ -1,6 +1,6 @@
 import graphene
 from django.contrib.auth import get_user_model
-from graphene import Node
+from graphene import Node, SimpleGlobalIDType
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 
@@ -12,7 +12,10 @@ from .models import ChatMessage as DbChatMessage
 from .models import ChatParticipant as DbChatParticipant
 from .utils import apply_pagination, create_chat, get_my_chats, write_message
 
-# User = get_user_model()
+
+class CustomNode(Node):
+    class Meta:
+        global_id_type = SimpleGlobalIDType
 
 
 class ChatParticipant(DjangoObjectType):
@@ -56,10 +59,11 @@ class ChatMessage(DjangoObjectType):
 
     class Meta:
         model = DbChatMessage
-        interfaces = (Node,)
+        interfaces = (CustomNode,)
         fields = ("id", "content", "sender_user", "created_at")
         filter_fields = ["id", "chat"]
         order_by = ["created_at"]
+        # global_id_type = SimpleGlobalIDType
 
 
 class Query(graphene.ObjectType):

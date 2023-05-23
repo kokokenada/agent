@@ -33,6 +33,13 @@ const DEBUG = true;
 
 if (styles) console.log('styles loaded'); // Trick vite into loading the CSS
 
+enum ChatNotificationEnum {
+  COMPLETE_RESPONSE = 1,
+  PARTIAL_RESPONSE = 2,
+  ERROR = 3,
+  INFO = 4,
+}
+
 export const Chat = () => {
   const navigate = useNavigate();
   const chatApi = useChatApi();
@@ -61,28 +68,87 @@ export const Chat = () => {
     );
   };
 
-  const getLastMessage = () => {
-    return messages[messages.length - 1];
-  };
-
   // Respond to server push response
   useEffect(() => {
     if (lastMessage !== null) {
       DEBUG && ClientLogger.debug('lastMessage', '', lastMessage);
       try {
         const parsedMessage = JSON.parse(lastMessage.data);
-        setMessages([
-          ...messages,
-          {
-            id: parsedMessage?.message.message_id,
-            content: parsedMessage?.message.message,
-            senderUser: {
-              id: parsedMessage?.message.message_id,
-              isAI: true,
-              name: 'Bot',
-            },
-          },
-        ]);
+        const notifcationType: ChatNotificationEnum =
+          parsedMessage?.message?.type;
+        const messageId = parsedMessage?.message?.message_id;
+        const content = parsedMessage?.message?.message;
+        const messageIndex = messages.findIndex(
+          (message) => message.id === messageId,
+        );
+        DEBUG &&
+          ClientLogger.debug('lastMessage', 'parsed', {
+            parsedMessage,
+            notifcationType,
+            messageIndex,
+            content,
+            messageId,
+            messages,
+          });
+        switch (notifcationType) {
+          case ChatNotificationEnum.COMPLETE_RESPONSE:
+            // add the message if not already there
+            if (messageIndex === -1) {
+              setMessages([
+                ...messages,
+                {
+                  id: messageId,
+                  content,
+                  senderUser: {
+                    id: 'bot',
+                    isAI: true,
+                    name: 'Bot',
+                  },
+                },
+              ]);
+            } else {
+              // otherwise update it
+              const newMessages = [...messages];
+              newMessages[messageIndex] = {
+                ...newMessages[messageIndex],
+                content,
+              };
+            }
+            break;
+          case ChatNotificationEnum.PARTIAL_RESPONSE:
+            // find the message and update it
+            if (messageIndex !== -1) {
+              const newMessages = [...messages];
+              newMessages[messageIndex] = {
+                ...newMessages[messageIndex],
+                // append the new content
+                content: `${newMessages[messageIndex].content}${content}`,
+              };
+              setMessages(newMessages);
+            } else {
+              // add new message
+              setMessages([
+                ...messages,
+                {
+                  id: messageId,
+                  content,
+                  senderUser: {
+                    id: 'bot',
+                    isAI: true,
+                    name: 'Bot',
+                  },
+                },
+              ]);
+            }
+            break;
+          case ChatNotificationEnum.ERROR:
+            ClientLogger.error('lastMessage', 'error', content);
+            break;
+          case ChatNotificationEnum.INFO:
+            break;
+          default:
+            break;
+        }
       } catch (e) {
         ClientLogger.error('lastMessage', 'parse failed', e);
       }
@@ -145,6 +211,7 @@ export const Chat = () => {
         innerText,
         nodes,
         answerAs,
+        connectionStatus,
       });
     if (!chatId) {
       ClientLogger.error('send', 'chatId is undefined');
@@ -178,22 +245,12 @@ export const Chat = () => {
 
   return (
     <>
-      {DEBUG && (
-        <div>
-          {/* <button
-          onClick={handleClickSendMessage}
-          disabled={readyState !== ReadyState.OPEN}
-        >
-          Click Me to send 'Hello'
-        </button> */}
-          <span>The WebSocket is currently {connectionStatus}</span>
-          {lastMessage ? <span>Last message: {lastMessage.data}</span> : null}
-        </div>
-      )}
       <TextField
         id="outlined-basic"
         label="Answer As"
         variant="outlined"
+        size="small"
+        sx={{ marginTop: '8px' }}
         {...register('answerAs')}
       />
       <div style={{ position: 'relative', height: '500px' }}>
@@ -240,6 +297,12 @@ export const Chat = () => {
           </ChatContainer>
         </MainContainer>
       </div>
+      {DEBUG && (
+        <div>
+          <span>The WebSocket is currently {connectionStatus}</span>
+          {lastMessage ? <span>Last message: {lastMessage.data}</span> : null}
+        </div>
+      )}
       <NewChatDialog
         open={addNewChatDialog}
         onClose={(chat) => {
