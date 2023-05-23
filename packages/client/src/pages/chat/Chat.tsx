@@ -43,15 +43,15 @@ export const Chat = () => {
   const [socketUrl, setSocketUrl] = useState(
     VITE_SERVER_API_URL.replace('graphql', `ws/chat/${chatId}`).replace(
       'http',
-      'ws'
-    )
+      'ws',
+    ),
   ); // test: ws://echo.websocket.events
   const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
 
   const calcUrl = (chatId: string): string => {
     return VITE_SERVER_API_URL.replace('graphql', `ws/chat/${chatId}/`).replace(
       'http',
-      'ws'
+      'ws',
     );
   };
 
@@ -128,7 +128,7 @@ export const Chat = () => {
     innerHtml: string,
     textContent: string,
     innerText: string,
-    nodes: NodeList
+    nodes: NodeList,
   ) => {
     DEBUG &&
       ClientLogger.debug('send', '', {
@@ -155,7 +155,7 @@ export const Chat = () => {
       // Don't await
       msgId,
       chatId,
-      innerText
+      innerText,
     );
   };
 
