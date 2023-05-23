@@ -39,21 +39,24 @@ export const Chat = () => {
   const [chatId, setChatId] = useState<string | undefined>(undefined);
   const [messages, setMessages] = useState<ChatMessageFragmentFragment[]>([]);
   const [addNewChatDialog, setAddNewChatDialog] = useState<boolean>(false);
-  // const [messageHistory, setMessageHistory] = useState<any[]>([]);
   const VITE_SERVER_API_URL = getEnvVar('VITE_API_URL');
   const [socketUrl, setSocketUrl] = useState(
     VITE_SERVER_API_URL.replace('graphql', `ws/chat/${chatId}`).replace(
       'http',
-      'ws',
-    ),
+      'ws'
+    )
   ); // test: ws://echo.websocket.events
   const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
 
   const calcUrl = (chatId: string): string => {
     return VITE_SERVER_API_URL.replace('graphql', `ws/chat/${chatId}/`).replace(
       'http',
-      'ws',
+      'ws'
     );
+  };
+
+  const getLastMessage = () => {
+    return messages[messages.length - 1];
   };
 
   useEffect(() => {
@@ -65,8 +68,12 @@ export const Chat = () => {
           ...messages,
           {
             id: 'msgId',
-            content: parsedMessage?.message,
-            senderUser: { id: '1', isAI: true, name: 'him' },
+            content: parsedMessage?.message.message,
+            senderUser: {
+              id: parsedMessage?.message.chat_id,
+              isAI: true,
+              name: 'Bot',
+            },
           },
         ]);
       } catch (e) {
@@ -121,7 +128,7 @@ export const Chat = () => {
     innerHtml: string,
     textContent: string,
     innerText: string,
-    nodes: NodeList,
+    nodes: NodeList
   ) => {
     DEBUG &&
       ClientLogger.debug('send', '', {
@@ -148,11 +155,19 @@ export const Chat = () => {
       // Don't await
       msgId,
       chatId,
-      innerText,
+      innerText
     );
   };
 
-  DEBUG && ClientLogger.debug('Chats', 'render', { myChats, messages, chatId });
+  const lastMessageObject = getLastMessage();
+
+  DEBUG &&
+    ClientLogger.debug('Chats', 'render', {
+      myChats,
+      messages,
+      chatId,
+      lastMessageObject,
+    });
 
   return (
     <>
@@ -184,8 +199,8 @@ export const Chat = () => {
                 <Conversation
                   key={chat.id}
                   name={chat.name}
-                  lastSenderName="Lilly"
-                  info="Yes i can do it for you"
+                  lastSenderName={lastMessageObject?.senderUser?.name || ''}
+                  info={lastMessageObject?.content.substring(0, 25) || ''}
                   onClick={() => {
                     getMessages(chat.id);
                   }}
