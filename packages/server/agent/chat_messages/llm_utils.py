@@ -34,5 +34,7 @@ def generate_response(chat_id, message):
 def send_message(chat_id, message):
     ws = websocket.WebSocket()
     ws.connect(f"ws://localhost:8000/ws/chat/{chat_id}/")
-    ws.send(json.dumps({"message": message}))
+    payload = json.dumps({"chat_id": chat_id, "message": message})
+    print(f"Sending message: {payload}")
+    ws.send(payload)
     ws.close()

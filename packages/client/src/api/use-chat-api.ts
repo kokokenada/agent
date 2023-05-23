@@ -28,6 +28,11 @@ export const CHAT_MESSAGE_FIELDS = gql`
   fragment ChatMessageFragment on ChatMessage {
     id
     content
+    senderUser {
+      id
+      name
+      isAI
+    }
   }
 `;
 

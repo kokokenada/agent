@@ -27,6 +27,7 @@ export interface Chat {
   id: Scalars['UUID'];
   messages: ChatMessageConnection;
   name: Scalars['String'];
+  participants: Array<ChatParticipant>;
 }
 
 export interface ChatmessagesArgs {
@@ -41,11 +42,11 @@ export interface ChatmessagesArgs {
 
 export interface ChatMessage extends Node {
   __typename?: 'ChatMessage';
-  blah?: Maybe<Scalars['String']>;
   content: Scalars['String'];
   createdAt: Scalars['DateTime'];
   /** The ID of the object */
   id: Scalars['ID'];
+  senderUser?: Maybe<User>;
 }
 
 export interface ChatMessageConnection {
@@ -63,6 +64,14 @@ export interface ChatMessageEdge {
   cursor: Scalars['String'];
   /** The item at the end of the edge */
   node?: Maybe<ChatMessage>;
+}
+
+export interface ChatParticipant {
+  __typename?: 'ChatParticipant';
+  chat: Chat;
+  createdAt: Scalars['DateTime'];
+  id: Scalars['UUID'];
+  user?: Maybe<User>;
 }
 
 export interface CreateChatMessageMutation {
@@ -167,6 +176,14 @@ export interface Refresh {
   token: Scalars['String'];
 }
 
+export interface User {
+  __typename?: 'User';
+  email: Scalars['String'];
+  id: Scalars['ID'];
+  isAI?: Maybe<Scalars['Boolean']>;
+  name: Scalars['String'];
+}
+
 export interface Verify {
   __typename?: 'Verify';
   payload: Scalars['GenericScalar'];
@@ -199,6 +216,12 @@ export type ChatMessageFragmentFragment = {
   __typename?: 'ChatMessage';
   id: string;
   content: string;
+  senderUser?: {
+    __typename?: 'User';
+    id: string;
+    name: string;
+    isAI?: boolean | null;
+  } | null;
 };
 
 export type myChatsQueryVariables = Exact<{ [key: string]: never }>;
@@ -218,7 +241,17 @@ export type chatMessagesQuery = {
     __typename?: 'ChatMessageConnection';
     edges: Array<{
       __typename?: 'ChatMessageEdge';
-      node?: { __typename?: 'ChatMessage'; id: string; content: string } | null;
+      node?: {
+        __typename?: 'ChatMessage';
+        id: string;
+        content: string;
+        senderUser?: {
+          __typename?: 'User';
+          id: string;
+          name: string;
+          isAI?: boolean | null;
+        } | null;
+      } | null;
     } | null>;
   } | null;
 };
@@ -249,6 +282,12 @@ export type createChatMessageMutation = {
       __typename?: 'ChatMessage';
       id: string;
       content: string;
+      senderUser?: {
+        __typename?: 'User';
+        id: string;
+        name: string;
+        isAI?: boolean | null;
+      } | null;
     } | null;
   } | null;
 };

@@ -13,7 +13,7 @@
         "VIRTUAL_ENV": "${workspaceFolder}/../venv",
         "PYTHONPATH": "${workspaceFolder}/../venv/lib/python3.11/site-packages"
       },
-      "envFile": "${workspaceFolder}/activate_and_set_env.sh"
+      "preLaunchTask": "Activate and Set Env"
     }
   ]
 }

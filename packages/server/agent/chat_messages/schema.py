@@ -4,13 +4,23 @@ from graphene import Node
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 
+from agent.users.schema import User
+
 from .llm_utils import generate_response
 from .models import Chat as DbChat
 from .models import ChatMessage as DbChatMessage
 from .models import ChatParticipant as DbChatParticipant
 from .utils import apply_pagination, create_chat, get_my_chats, write_message
 
-User = get_user_model()
+# User = get_user_model()
+
+
+class ChatParticipant(DjangoObjectType):
+    user = graphene.Field(User)
+
+    class Meta:
+        model = DbChatParticipant
+        fields = ("id", "chat", "user", "created_at")
 
 
 class Chat(DjangoObjectType):
@@ -38,12 +48,12 @@ class CreateChatMutation(graphene.Mutation):
 
 
 class ChatMessage(DjangoObjectType):
-    blah = graphene.String()
+    sender_user = graphene.Field(User)
 
     class Meta:
         model = DbChatMessage
         interfaces = (Node,)
-        fields = ("id", "content", "sender_user", "created_at", "blah")
+        fields = ("id", "content", "sender_user", "created_at")
         filter_fields = ["id", "chat"]
         order_by = ["created_at"]
 

@@ -39,7 +39,7 @@ export const Chat = () => {
   const [chatId, setChatId] = useState<string | undefined>(undefined);
   const [messages, setMessages] = useState<ChatMessageFragmentFragment[]>([]);
   const [addNewChatDialog, setAddNewChatDialog] = useState<boolean>(false);
-  const [messageHistory, setMessageHistory] = useState<any[]>([]);
+  // const [messageHistory, setMessageHistory] = useState<any[]>([]);
   const VITE_SERVER_API_URL = getEnvVar('VITE_API_URL');
   const [socketUrl, setSocketUrl] = useState(
     VITE_SERVER_API_URL.replace('graphql', `ws/chat/${chatId}`).replace(
@@ -58,16 +58,22 @@ export const Chat = () => {
 
   useEffect(() => {
     if (lastMessage !== null) {
-      setMessageHistory((prev) => prev.concat(lastMessage));
+      DEBUG && ClientLogger.debug('lastMessage', '', lastMessage);
+      try {
+        const parsedMessage = JSON.parse(lastMessage.data);
+        setMessages([
+          ...messages,
+          {
+            id: 'msgId',
+            content: parsedMessage?.message,
+            senderUser: { id: '1', isAI: true, name: 'him' },
+          },
+        ]);
+      } catch (e) {
+        ClientLogger.error('lastMessage', 'parse failed', e);
+      }
     }
-  }, [lastMessage, setMessageHistory]);
-
-  const handleClickChangeSocketUrl = useCallback(
-    () => setSocketUrl('wss://demos.kaazing.com/echo'),
-    [],
-  );
-
-  const handleClickSendMessage = useCallback(() => sendMessage('Hello'), []);
+  }, [lastMessage]);
 
   const connectionStatus = {
     [ReadyState.CONNECTING]: 'Connecting',
@@ -83,7 +89,6 @@ export const Chat = () => {
       readyState,
       lastMessage,
       socketUrl,
-      messageHistory,
     });
 
   useEffect(() => {
@@ -129,38 +134,40 @@ export const Chat = () => {
       ClientLogger.error('send', 'chatId is undefined');
       return;
     }
-    const newMessge = await chatApi.createChatMessage(
-      uuidv4(),
+    const msgId = uuidv4();
+    setMessages([
+      ...messages,
+      {
+        id: msgId,
+        content: innerText,
+        senderUser: { id: 'me', isAI: false, name: 'me' },
+      },
+    ]);
+
+    const newMessge = chatApi.createChatMessage(
+      // Don't await
+      msgId,
       chatId,
       innerText,
     );
-    if (newMessge.data?.createChatMessage?.chatMessage) {
-      setMessages([...messages, newMessge.data.createChatMessage.chatMessage]);
-    }
   };
 
   DEBUG && ClientLogger.debug('Chats', 'render', { myChats, messages, chatId });
 
   return (
     <>
-      <div>
-        <button onClick={handleClickChangeSocketUrl}>
-          Click Me to change Socket Url
-        </button>
-        <button
+      {DEBUG && (
+        <div>
+          {/* <button
           onClick={handleClickSendMessage}
           disabled={readyState !== ReadyState.OPEN}
         >
           Click Me to send 'Hello'
-        </button>
-        <span>The WebSocket is currently {connectionStatus}</span>
-        {lastMessage ? <span>Last message: {lastMessage.data}</span> : null}
-        <ul>
-          {messageHistory.map((message, idx) => (
-            <span key={idx}>{message ? message.data : null}</span>
-          ))}
-        </ul>
-      </div>
+        </button> */}
+          <span>The WebSocket is currently {connectionStatus}</span>
+          {lastMessage ? <span>Last message: {lastMessage.data}</span> : null}
+        </div>
+      )}
       <div style={{ position: 'relative', height: '500px' }}>
         <MainContainer>
           <Sidebar position="left" scrollable={false}>
@@ -194,6 +201,9 @@ export const Chat = () => {
                   key={message.id}
                   model={{
                     message: message.content,
+                    direction: message?.senderUser?.isAI
+                      ? 'incoming'
+                      : 'outgoing',
                   }}
                 />
               ))}
