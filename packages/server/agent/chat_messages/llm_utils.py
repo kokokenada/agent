@@ -3,27 +3,48 @@ import os
 import uuid
 
 import websocket
+from langchain.chat_models import ChatOpenAI
 
 # from django_eventstream import send_event
 from langchain.llms import OpenAI
+from langchain.prompts.chat import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate
 
 from agent.chat_messages.consumers import ChatConsumer
 
 from .utils import get_system_user, write_message
 
 llm = OpenAI(temperature=0.9)
+chat = ChatOpenAI(temperature=0.9)
+
+USE_CHAT = True
+
+template = "You are a helpful assistant that answers like {answer_as}."
+system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+human_template = "{text}"
+human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+
+chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
 
 
-def generate_response(chat_id, message):
+def generate_response(chat_id, message, answer_as=None):
     print(f"Generating response... {message} key={os.environ.get('OPENAI_API_KEY')}")
     try:
-        resp = llm(message)
+        resp = ""
+        if USE_CHAT:
+            resp = chat(
+                chat_prompt.format_prompt(
+                    text=message, answer_as=answer_as or "a helpful and friendly bot"
+                ).to_messages()
+            ).content
+        else:
+            resp = llm(message)
         print(f"Response: {resp}")
-        # send_event("test", "message", {"text": "hello world"})
 
-        write_message(uuid.uuid4(), get_system_user(), chat_id, resp)
+        message_id = uuid.uuid4()
 
-        send_message(chat_id, resp)
+        write_message(message_id, get_system_user(), chat_id, resp)
+
+        send_message(message_id, chat_id, resp)
 
         return resp
     except Exception as e:
@@ -31,10 +52,10 @@ def generate_response(chat_id, message):
         return "Sorry, I didn't understand that."
 
 
-def send_message(chat_id, message):
+def send_message(message_id, chat_id, message):
     ws = websocket.WebSocket()
     ws.connect(f"ws://localhost:8000/ws/chat/{chat_id}/")
-    payload = json.dumps({"message": {"message": message, "chat_id": chat_id}})
-    print(f"Sending message: {payload}")
+    payload = json.dumps({"message": {"message": message, "chat_id": str(chat_id), "message_id": str(message_id)}})
+    print(f"Sending message: {payload} to chat_id={chat_id} message_id={message_id}")
     ws.send(payload)
     ws.close()

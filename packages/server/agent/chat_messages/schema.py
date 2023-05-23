@@ -24,10 +24,14 @@ class ChatParticipant(DjangoObjectType):
 
 
 class Chat(DjangoObjectType):
-    # Describe the data that is to be formatted into GraphQL fields
+    last_message = graphene.Field("chat_messages.schema.ChatMessage")
+
     class Meta:
         model = DbChat
-        field = ("id", "name")
+        field = ("id", "name", "last_message")
+
+    def resolve_last_message(self, info):
+        return DbChatMessage.objects.filter(chat_id=self.id).order_by("-created_at").first()
 
 
 class CreateChatMutation(graphene.Mutation):
@@ -91,12 +95,13 @@ class CreateChatMessageMutation(graphene.Mutation):
         id = graphene.ID(required=True)
         chat_id = graphene.ID(required=True)
         content = graphene.String(required=True)
+        answer_as = graphene.String(required=False)
 
-    def mutate(self, info, id, chat_id, content):
+    def mutate(self, info, id, chat_id, content, answer_as=None):
         user = info.context.user
         chat_message = write_message(id, user, chat_id, content)
 
-        generate_response(chat_id, content)
+        generate_response(chat_id, content, answer_as)
 
         return CreateChatMessageMutation(chat_message=chat_message)
 

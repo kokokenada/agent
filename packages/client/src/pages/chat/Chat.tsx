@@ -27,6 +27,7 @@ import {
 import { Button, Dialog, TextField } from '@mui/material';
 import { NewChatDialog } from './NewChatDialog';
 import { getEnvVar } from '@src/api/utils';
+import { useForm } from 'react-hook-form';
 
 const DEBUG = true;
 
@@ -47,6 +48,11 @@ export const Chat = () => {
     ),
   ); // test: ws://echo.websocket.events
   const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
+  const {
+    register,
+    getValues,
+    formState: { errors },
+  } = useForm();
 
   const calcUrl = (chatId: string): string => {
     return VITE_SERVER_API_URL.replace('graphql', `ws/chat/${chatId}/`).replace(
@@ -59,6 +65,7 @@ export const Chat = () => {
     return messages[messages.length - 1];
   };
 
+  // Respond to server push response
   useEffect(() => {
     if (lastMessage !== null) {
       DEBUG && ClientLogger.debug('lastMessage', '', lastMessage);
@@ -67,10 +74,10 @@ export const Chat = () => {
         setMessages([
           ...messages,
           {
-            id: 'msgId',
+            id: parsedMessage?.message.message_id,
             content: parsedMessage?.message.message,
             senderUser: {
-              id: parsedMessage?.message.chat_id,
+              id: parsedMessage?.message.message_id,
               isAI: true,
               name: 'Bot',
             },
@@ -130,12 +137,14 @@ export const Chat = () => {
     innerText: string,
     nodes: NodeList,
   ) => {
+    const answerAs = getValues('answerAs');
     DEBUG &&
       ClientLogger.debug('send', '', {
         innerHtml,
         textContent,
         innerText,
         nodes,
+        answerAs,
       });
     if (!chatId) {
       ClientLogger.error('send', 'chatId is undefined');
@@ -156,17 +165,15 @@ export const Chat = () => {
       msgId,
       chatId,
       innerText,
+      answerAs,
     );
   };
-
-  const lastMessageObject = getLastMessage();
 
   DEBUG &&
     ClientLogger.debug('Chats', 'render', {
       myChats,
       messages,
       chatId,
-      lastMessageObject,
     });
 
   return (
@@ -183,6 +190,12 @@ export const Chat = () => {
           {lastMessage ? <span>Last message: {lastMessage.data}</span> : null}
         </div>
       )}
+      <TextField
+        id="outlined-basic"
+        label="Answer As"
+        variant="outlined"
+        {...register('answerAs')}
+      />
       <div style={{ position: 'relative', height: '500px' }}>
         <MainContainer>
           <Sidebar position="left" scrollable={false}>
@@ -199,8 +212,8 @@ export const Chat = () => {
                 <Conversation
                   key={chat.id}
                   name={chat.name}
-                  lastSenderName={lastMessageObject?.senderUser?.name || ''}
-                  info={lastMessageObject?.content.substring(0, 25) || ''}
+                  lastSenderName={chat.lastMessage?.senderUser?.name || ''}
+                  info={chat.lastMessage?.content.substring(0, 25) || ''}
                   onClick={() => {
                     getMessages(chat.id);
                   }}

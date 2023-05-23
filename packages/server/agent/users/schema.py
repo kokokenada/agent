@@ -19,8 +19,6 @@ class User(DjangoObjectType):
         fields = ("id", "name", "email", "isAI")
 
     def resolve_isAI(self, info):
-        print("resolve_isAI called")
-        print(f"self={self} self.id={self.id} SYSTEM_USER_ID={SYSTEM_USER_ID}")
         return self.id == SYSTEM_USER_ID
 
 

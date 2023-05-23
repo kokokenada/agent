@@ -25,6 +25,7 @@ export interface Chat {
   __typename?: 'Chat';
   createdAt: Scalars['DateTime'];
   id: Scalars['UUID'];
+  lastMessage?: Maybe<ChatMessage>;
   messages: ChatMessageConnection;
   name: Scalars['String'];
   participants: Array<ChatParticipant>;
@@ -105,6 +106,7 @@ export interface MutationcreateChatArgs {
 }
 
 export interface MutationcreateChatMessageArgs {
+  answerAs?: InputMaybe<Scalars['String']>;
   chatId: Scalars['ID'];
   content: Scalars['String'];
   id: Scalars['ID'];
@@ -206,12 +208,6 @@ export type tokenAuthMutation = {
   tokenAuth?: { __typename?: 'ObtainJSONWebToken'; token: string } | null;
 };
 
-export type ChatFragmentFragment = {
-  __typename?: 'Chat';
-  id: any;
-  name: string;
-};
-
 export type ChatMessageFragmentFragment = {
   __typename?: 'ChatMessage';
   id: string;
@@ -224,11 +220,43 @@ export type ChatMessageFragmentFragment = {
   } | null;
 };
 
+export type ChatFragmentFragment = {
+  __typename?: 'Chat';
+  id: any;
+  name: string;
+  lastMessage?: {
+    __typename?: 'ChatMessage';
+    id: string;
+    content: string;
+    senderUser?: {
+      __typename?: 'User';
+      id: string;
+      name: string;
+      isAI?: boolean | null;
+    } | null;
+  } | null;
+};
+
 export type myChatsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type myChatsQuery = {
   __typename?: 'Query';
-  myChats?: Array<{ __typename?: 'Chat'; id: any; name: string } | null> | null;
+  myChats?: Array<{
+    __typename?: 'Chat';
+    id: any;
+    name: string;
+    lastMessage?: {
+      __typename?: 'ChatMessage';
+      id: string;
+      content: string;
+      senderUser?: {
+        __typename?: 'User';
+        id: string;
+        name: string;
+        isAI?: boolean | null;
+      } | null;
+    } | null;
+  } | null> | null;
 };
 
 export type chatMessagesQueryVariables = Exact<{
@@ -264,7 +292,22 @@ export type createChatMutation = {
   __typename?: 'Mutation';
   createChat?: {
     __typename?: 'CreateChatMutation';
-    chat?: { __typename?: 'Chat'; id: any; name: string } | null;
+    chat?: {
+      __typename?: 'Chat';
+      id: any;
+      name: string;
+      lastMessage?: {
+        __typename?: 'ChatMessage';
+        id: string;
+        content: string;
+        senderUser?: {
+          __typename?: 'User';
+          id: string;
+          name: string;
+          isAI?: boolean | null;
+        } | null;
+      } | null;
+    } | null;
   } | null;
 };
 
