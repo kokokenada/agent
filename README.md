@@ -4,7 +4,7 @@ A starter custom chat interface with a React front end and LangChain / Python ba
 
 ## Demo
 
-[Demo](./static/demo.gif)
+![Demo](./static/demo.gif)
 
 
 
