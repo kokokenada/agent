@@ -1,22 +1,40 @@
 import graphene
 from django.contrib.auth import get_user_model
-from graphene import Node
+from graphene import Node, SimpleGlobalIDType
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 
+from agent.users.schema import User
+
+from .llm_utils import generate_response
 from .models import Chat as DbChat
 from .models import ChatMessage as DbChatMessage
 from .models import ChatParticipant as DbChatParticipant
-from .utils import apply_pagination, create_chat, get_my_chats
+from .utils import apply_pagination, create_chat, get_my_chats, write_message
 
-User = get_user_model()
+
+class CustomNode(Node):
+    class Meta:
+        global_id_type = SimpleGlobalIDType
+
+
+class ChatParticipant(DjangoObjectType):
+    user = graphene.Field(User)
+
+    class Meta:
+        model = DbChatParticipant
+        fields = ("id", "chat", "user", "created_at")
 
 
 class Chat(DjangoObjectType):
-    # Describe the data that is to be formatted into GraphQL fields
+    last_message = graphene.Field("chat_messages.schema.ChatMessage")
+
     class Meta:
         model = DbChat
-        field = ("id", "name")
+        field = ("id", "name", "last_message")
+
+    def resolve_last_message(self, info):
+        return DbChatMessage.objects.filter(chat_id=self.id).order_by("-created_at").first()
 
 
 class CreateChatMutation(graphene.Mutation):
@@ -37,12 +55,15 @@ class CreateChatMutation(graphene.Mutation):
 
 
 class ChatMessage(DjangoObjectType):
+    sender_user = graphene.Field(User)
+
     class Meta:
         model = DbChatMessage
-        interfaces = (Node,)
+        interfaces = (CustomNode,)
         fields = ("id", "content", "sender_user", "created_at")
         filter_fields = ["id", "chat"]
         order_by = ["created_at"]
+        # global_id_type = SimpleGlobalIDType
 
 
 class Query(graphene.ObjectType):
@@ -75,22 +96,16 @@ class CreateChatMessageMutation(graphene.Mutation):
     chat_message = graphene.Field(ChatMessage)
 
     class Arguments:
+        id = graphene.ID(required=True)
         chat_id = graphene.ID(required=True)
         content = graphene.String(required=True)
+        answer_as = graphene.String(required=False)
 
-    def mutate(self, info, chat_id, content):
+    def mutate(self, info, id, chat_id, content, answer_as=None):
         user = info.context.user
-        if user.is_anonymous:
-            raise Exception("Authentication required")
+        chat_message = write_message(id, user, chat_id, content)
 
-        chat = DbChat.objects.get(id=chat_id)
-        chat_participant = DbChatParticipant.objects.get(chat_id=chat_id, user_id=user.id)
-        print(chat_participant)
-        if not chat_participant:
-            raise Exception("Not authorized to send messages in this chat")
-
-        chat_message = DbChatMessage(chat=chat, sender_user=user, content=content)
-        chat_message.save()
+        generate_response(chat_id, content, answer_as)
 
         return CreateChatMessageMutation(chat_message=chat_message)
 

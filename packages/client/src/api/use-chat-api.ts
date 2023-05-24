@@ -17,17 +17,26 @@ import {
   createChatMessageMutation,
 } from './types';
 
-export const CHAT_FIELDS = gql`
-  fragment ChatFragment on Chat {
-    id
-    name
-  }
-`;
-
 export const CHAT_MESSAGE_FIELDS = gql`
   fragment ChatMessageFragment on ChatMessage {
     id
     content
+    senderUser {
+      id
+      name
+      isAI
+    }
+  }
+`;
+
+export const CHAT_FIELDS = gql`
+  ${CHAT_MESSAGE_FIELDS}
+  fragment ChatFragment on Chat {
+    id
+    name
+    lastMessage {
+      ...ChatMessageFragment
+    }
   }
 `;
 
@@ -103,7 +112,12 @@ export function useChatApi() {
       return resp;
     },
 
-    async createChatMessage(chatId: string, content: string) {
+    async createChatMessage(
+      id: string,
+      chatId: string,
+      content: string,
+      answerAs?: string | undefined,
+    ) {
       DEBUG && ClientLogger.debug('useChatApi.createChat', `started`);
       const resp = await api.mutate<
         createChatMessageMutation,
@@ -111,15 +125,25 @@ export function useChatApi() {
       >({
         mutation: gql`
           ${CHAT_MESSAGE_FIELDS}
-          mutation createChatMessage($chatId: ID!, $content: String!) {
-            createChatMessage(chatId: $chatId, content: $content) {
+          mutation createChatMessage(
+            $id: ID!
+            $chatId: ID!
+            $content: String!
+            $answerAs: String
+          ) {
+            createChatMessage(
+              id: $id
+              chatId: $chatId
+              content: $content
+              answerAs: $answerAs
+            ) {
               chatMessage {
                 ...ChatMessageFragment
               }
             }
           }
         `,
-        variables: { chatId, content },
+        variables: { id, chatId, content, answerAs },
       });
       DEBUG &&
         ClientLogger.debug('useChatApi.createChatMessage', 'Response', resp);

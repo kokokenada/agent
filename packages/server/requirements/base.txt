@@ -7,7 +7,10 @@ redis==4.5.4  # https://github.com/redis/redis-py
 hiredis==2.2.2  # https://github.com/redis/hiredis-py
 uvicorn[standard]==0.22.0  # https://github.com/encode/uvicorn
 asgiref==3.6.0
-
+channels==4.0.0
+# django-eventstream==4.5.1
+websocket-client==1.5.2
+channels_redis==4.1.0
 
 # Django
 # ------------------------------------------------------------------------------
@@ -22,4 +25,7 @@ graphene-django==3.0.0
 django-cors-headers==3.14.0
 django-graphql-jwt==0.3.4
 # django_filters==0.23.2
-graphene_django_filter=0.6.4
+# graphene_django_filter==0.6.4
+
+# Langchain stuff
+langchain[llms]==0.0.174

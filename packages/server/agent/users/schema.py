@@ -3,8 +3,23 @@ import graphql_jwt
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.db import models
 from django.http import HttpResponse
+from graphene_django import DjangoObjectType
 
+from agent.users.models import User as DbUser
 from config.settings.base import JWT_AUTH
+
+from .constants import SYSTEM_USER_ID
+
+
+class User(DjangoObjectType):
+    isAI = graphene.Boolean()
+
+    class Meta:
+        model = DbUser
+        fields = ("id", "name", "email", "isAI")
+
+    def resolve_isAI(self, info):
+        return self.id == SYSTEM_USER_ID
 
 
 class LogoutMutation(graphene.Mutation):

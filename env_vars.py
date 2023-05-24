@@ -2,6 +2,11 @@ import argparse
 import os
 import subprocess
 
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
 parser = argparse.ArgumentParser(description="Environment Variables Setter Program")
 parser.add_argument(
     "--env",
@@ -58,6 +63,7 @@ if environment == "local" and (active_branch == "develop" or active_branch == "m
 print(f"export VIRTUAL_ENV={venv}")
 print(f"export GIT_BRANCH={active_branch}")
 print(f"export ENVIRONMENT={environment}")
+print(f"export OPENAI_API_KEY={os.environ['OPENAI_API_KEY']}")
 if active_branch == "master":
     print("export DJANGO_SETTINGS_MODULE=config.settings.production")
     print("export VITE_API_URL=https://api.agent.todo.deplyment.url.here.com")

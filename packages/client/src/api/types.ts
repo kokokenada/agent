@@ -18,20 +18,23 @@ export interface Scalars {
   Float: number;
   DateTime: any;
   GenericScalar: any;
+  UUID: any;
 }
 
 export interface Chat {
   __typename?: 'Chat';
   createdAt: Scalars['DateTime'];
-  id: Scalars['ID'];
+  id: Scalars['UUID'];
+  lastMessage?: Maybe<ChatMessage>;
   messages: ChatMessageConnection;
   name: Scalars['String'];
+  participants: Array<ChatParticipant>;
 }
 
 export interface ChatmessagesArgs {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
-  chat?: InputMaybe<Scalars['ID']>;
+  chat?: InputMaybe<Scalars['UUID']>;
   first?: InputMaybe<Scalars['Int']>;
   id?: InputMaybe<Scalars['ID']>;
   last?: InputMaybe<Scalars['Int']>;
@@ -42,8 +45,9 @@ export interface ChatMessage extends Node {
   __typename?: 'ChatMessage';
   content: Scalars['String'];
   createdAt: Scalars['DateTime'];
-  /** The ID of the object. */
+  /** The ID of the object */
   id: Scalars['ID'];
+  senderUser?: Maybe<User>;
 }
 
 export interface ChatMessageConnection {
@@ -61,6 +65,14 @@ export interface ChatMessageEdge {
   cursor: Scalars['String'];
   /** The item at the end of the edge */
   node?: Maybe<ChatMessage>;
+}
+
+export interface ChatParticipant {
+  __typename?: 'ChatParticipant';
+  chat: Chat;
+  createdAt: Scalars['DateTime'];
+  id: Scalars['UUID'];
+  user?: Maybe<User>;
 }
 
 export interface CreateChatMessageMutation {
@@ -94,12 +106,14 @@ export interface MutationcreateChatArgs {
 }
 
 export interface MutationcreateChatMessageArgs {
+  answerAs?: InputMaybe<Scalars['String']>;
   chatId: Scalars['ID'];
   content: Scalars['String'];
+  id: Scalars['ID'];
 }
 
 export interface MutationrefreshTokenArgs {
-  token?: InputMaybe<Scalars['String']>;
+  refreshToken?: InputMaybe<Scalars['String']>;
 }
 
 export interface MutationtokenAuthArgs {
@@ -113,7 +127,7 @@ export interface MutationverifyTokenArgs {
 
 /** An object with an ID */
 export interface Node {
-  /** The ID of the object. */
+  /** The ID of the object */
   id: Scalars['ID'];
 }
 
@@ -122,6 +136,7 @@ export interface ObtainJSONWebToken {
   __typename?: 'ObtainJSONWebToken';
   payload: Scalars['GenericScalar'];
   refreshExpiresIn: Scalars['Int'];
+  refreshToken: Scalars['String'];
   token: Scalars['String'];
 }
 
@@ -147,7 +162,7 @@ export interface Query {
 export interface QuerychatMessagesArgs {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
-  chat?: InputMaybe<Scalars['ID']>;
+  chat?: InputMaybe<Scalars['UUID']>;
   chatId: Scalars['ID'];
   first?: InputMaybe<Scalars['Int']>;
   id?: InputMaybe<Scalars['ID']>;
@@ -159,7 +174,16 @@ export interface Refresh {
   __typename?: 'Refresh';
   payload: Scalars['GenericScalar'];
   refreshExpiresIn: Scalars['Int'];
+  refreshToken: Scalars['String'];
   token: Scalars['String'];
+}
+
+export interface User {
+  __typename?: 'User';
+  email: Scalars['String'];
+  id: Scalars['ID'];
+  isAI?: Maybe<Scalars['Boolean']>;
+  name: Scalars['String'];
 }
 
 export interface Verify {
@@ -184,16 +208,33 @@ export type tokenAuthMutation = {
   tokenAuth?: { __typename?: 'ObtainJSONWebToken'; token: string } | null;
 };
 
-export type ChatFragmentFragment = {
-  __typename?: 'Chat';
-  id: string;
-  name: string;
-};
-
 export type ChatMessageFragmentFragment = {
   __typename?: 'ChatMessage';
   id: string;
   content: string;
+  senderUser?: {
+    __typename?: 'User';
+    id: string;
+    name: string;
+    isAI?: boolean | null;
+  } | null;
+};
+
+export type ChatFragmentFragment = {
+  __typename?: 'Chat';
+  id: any;
+  name: string;
+  lastMessage?: {
+    __typename?: 'ChatMessage';
+    id: string;
+    content: string;
+    senderUser?: {
+      __typename?: 'User';
+      id: string;
+      name: string;
+      isAI?: boolean | null;
+    } | null;
+  } | null;
 };
 
 export type myChatsQueryVariables = Exact<{ [key: string]: never }>;
@@ -202,8 +243,19 @@ export type myChatsQuery = {
   __typename?: 'Query';
   myChats?: Array<{
     __typename?: 'Chat';
-    id: string;
+    id: any;
     name: string;
+    lastMessage?: {
+      __typename?: 'ChatMessage';
+      id: string;
+      content: string;
+      senderUser?: {
+        __typename?: 'User';
+        id: string;
+        name: string;
+        isAI?: boolean | null;
+      } | null;
+    } | null;
   } | null> | null;
 };
 
@@ -217,7 +269,17 @@ export type chatMessagesQuery = {
     __typename?: 'ChatMessageConnection';
     edges: Array<{
       __typename?: 'ChatMessageEdge';
-      node?: { __typename?: 'ChatMessage'; id: string; content: string } | null;
+      node?: {
+        __typename?: 'ChatMessage';
+        id: string;
+        content: string;
+        senderUser?: {
+          __typename?: 'User';
+          id: string;
+          name: string;
+          isAI?: boolean | null;
+        } | null;
+      } | null;
     } | null>;
   } | null;
 };
@@ -230,11 +292,27 @@ export type createChatMutation = {
   __typename?: 'Mutation';
   createChat?: {
     __typename?: 'CreateChatMutation';
-    chat?: { __typename?: 'Chat'; id: string; name: string } | null;
+    chat?: {
+      __typename?: 'Chat';
+      id: any;
+      name: string;
+      lastMessage?: {
+        __typename?: 'ChatMessage';
+        id: string;
+        content: string;
+        senderUser?: {
+          __typename?: 'User';
+          id: string;
+          name: string;
+          isAI?: boolean | null;
+        } | null;
+      } | null;
+    } | null;
   } | null;
 };
 
 export type createChatMessageMutationVariables = Exact<{
+  id: Scalars['ID'];
   chatId: Scalars['ID'];
   content: Scalars['String'];
 }>;
@@ -247,6 +325,12 @@ export type createChatMessageMutation = {
       __typename?: 'ChatMessage';
       id: string;
       content: string;
+      senderUser?: {
+        __typename?: 'User';
+        id: string;
+        name: string;
+        isAI?: boolean | null;
+      } | null;
     } | null;
   } | null;
 };

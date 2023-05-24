@@ -2,5 +2,7 @@
 
 source activate_and_set_env.sh
 cd packages/server
+python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser
+cd ../..
