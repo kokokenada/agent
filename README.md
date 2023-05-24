@@ -4,7 +4,7 @@ A starter custom chat interface with a React front end and LangChain / Python ba
 
 ## Demo
 
-https:static/demo.mp4
+[Demo](./staric/demo.mp4)
 
 
 
