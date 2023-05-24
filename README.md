@@ -4,7 +4,9 @@ A starter custom chat interface with a React front end and LangChain / Python ba
 
 ## Demo
 
-<video src='static/demo.mp4' width=180/>
+https://static/demo.mp4
+
+
 
 ## Stack
 
